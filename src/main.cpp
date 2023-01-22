@@ -15,6 +15,9 @@ const auto fieldTypes = getFieldTypesArray();
    values of each field could be updated between statement executions. If it is a read
    statement, then updated values could be read between executions if they have changed.
 
+   Theoretically, class name would be the table name with word row at end and the tuple
+   would have the table's fields.
+
    May decide to make separate classes for rows that are meant to read or write.
    Need to also consider case where only certain fields are updated.
 */
