@@ -1,0 +1,11 @@
+**/CMakeFiles
+**/Makefile
+**/build/CMakeCache.txt
+**/build/cmake_install.cmake
+**/typetest
+typetest
+.vscode
+createclass
+run
+myvars.h
+
