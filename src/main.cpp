@@ -1,20 +1,8 @@
-/*
-   Third commit note: Unfinished idea, abandoning as I believe I could make a better more
-   practical/extensible version using polymorphism now that I have acquainted myself more
-   with my options. Committing this as it for future reference and will immediately change
-   to a polymorphic version after commit.
-
-*/
-
 #include <algorithm>
-#include <concepts>
-#include <initializer_list>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <string_view>
+#include <memory>
 #include <tuple>
-#include <type_traits>
 #include <vector>
 
 #include "fieldTypes.hpp"
@@ -29,128 +17,96 @@ const auto fieldTypes = getFieldTypesArray();
    values of each field could be updated between statement executions. If it is a read
    statement, then updated values could be read between executions if they have changed.
 
-   Theoretically, class name would be the table name with word row at end and the tuple
-   would have the table's fields.
-
    May decide to make separate classes for rows that are meant to read or write.
    Need to also consider case where only certain fields are updated.
 */
 
-enum class RowField { TINY, SMALL, BIG, FIRST_NAME };
-
-class IntsTableRow {
-
+template <typename... Ptrs>
+class TableRow {
    private:
-    std::tuple<TinyInt, SmallInt, BigInt, TextType> fields;
+    std::vector<std::unique_ptr<SqlType>> columns;
+    std::vector<MYSQL_BIND> selection;
 
    public:
-    TinyInt* tiny;
-    SmallInt* small;
-    BigInt* big;
-    TextType* firstName;
-    std::vector<MYSQL_BIND> binds;
-    IntsTableRow()
-        : fields( std::make_tuple( TinyInt( "tiny" ), SmallInt( "small" ),
-                                   BigInt( "big" ), TextType( "first_name" ) ) ),
-          tiny( &std::get<0>( fields ) ),
-          small( &std::get<1>( fields ) ),
-          big( &std::get<2>( fields ) ),
-          firstName( &std::get<3>( fields ) ) {
+    // same as columns just needed different name for same thing
+    std::vector<SqlType*> fields;
+
+    TableRow() = delete;
+    TableRow( Ptrs&&... ptrs ) {
+        ( columns.emplace_back( std::forward<Ptrs>( ptrs ) ), ... );
+        for ( size_t i = 0; i < columns.size(); ++i ) {
+            fields.emplace_back( columns[i].get() );
+        }
     }
     void displayFields() {
-        std::apply(
-            []( auto&... tupleArgs ) {
-                std::cout << std::left << std::setw( 30 ) << "\nField Name";
-                std::cout << std::left << std::setw( 30 ) << "Field Type";
-                std::cout << std::left << std::setw( 30 ) << "Field Value" << '\n';
-                std::cout << std::left << std::setw( 90 ) << std::setfill( '-' ) << '-'
-                          << std::setfill( ' ' ) << '\n';
-                auto display = []( auto& o ) {
-                    std::cout << std::left << std::setw( 30 ) << o.fieldName;
-                    std::cout << std::left << std::setw( 30 ) << fieldTypes[o.bufferType];
-                    std::cout << std::left << std::setw( 30 ) << o.getValue() << '\n';
-                };
-                ( display( tupleArgs ), ... );
-                puts( "" );
-            },
-            fields );
+        puts( "" );
+        std::cout << std::left << std::setw( 30 ) << "Field Name";
+        std::cout << std::left << std::setw( 30 ) << "Field Type";
+        std::cout << std::left << std::setw( 30 ) << "Field Value" << '\n';
+        std::cout << std::left << std::setw( 90 ) << std::setfill( '-' ) << '-'
+                  << std::setfill( ' ' ) << '\n';
+        std::for_each( fields.begin(), fields.end(), [&]( const auto& o ) {
+            std::cout << std::left << std::setw( 30 ) << o->fieldName;
+            std::cout << std::left << std::setw( 30 ) << fieldTypes[o->bufferType];
+            o->printValue();
+        } );
+        puts( "" );
     }
 
-    // template <typename T>
-    // void setFieldValue( const char* name, const T& t ) {
+    void setBinds() {
+        selection.erase( selection.begin(), selection.end() );
 
-    //     auto setIt = [&]( auto&... object ) {
-    //         ( ( object.fieldName == name && ( object.setValue( t ), 1 ) ) || ... );
-    //     };
-
-    //     std::apply( setIt, fields );
-    // }
-
-    template <typename... Ts>
-    using AllRfs = typename std::conjunction<std::is_same<Ts, RowField>...>::type;
-
-    template <typename... Ts>
-
-    void selectFields( Ts... ts ) {
-        auto bindFieldsToBindsArray = [&]( auto* o ) {
-            o->bind = &( *std::next( binds.end(), -1 ) );
-            std::memset( &( *o->bind ), 0, sizeof( *o->bind ) );
-            o->bind->buffer_type = o->bufferType;
-            o->bind->buffer = (char*)o->buffer;
-            o->bind->is_null = &o->isNull;
-            o->bind->length = &o->length;
-            o->bind->error = &o->error;
-            if ( o->bufferType == MYSQL_TYPE_STRING ) {
-                o->bind->buffer_length = o->bufferLength;
+        std::for_each( columns.begin(), columns.end(), [&]( auto& o ) {
+            if ( o->is_selected ) {
+                selection.emplace_back();
+                o->bind = &( *std::next( selection.end(), -1 ) );
+                std::memset( &( *o->bind ), 0, sizeof( *o->bind ) );
+                o->bind->buffer_type = o->bufferType;
+                o->bind->buffer = (char*)o->buffer;
+                o->bind->is_null = &o->isNull;
+                o->bind->length = &o->length;
+                o->bind->error = &o->error;
+                if ( o->bufferType == MYSQL_TYPE_STRING ) {
+                    o->bind->buffer_length = o->bufferLength;
+                }
             }
-        };
+        } );
+    }
 
-        // does not maintain correct sequence, idea unfinished
-        const auto makeSelection = [&]( RowField& selection ) {
-            binds.emplace_back();
-            switch ( selection ) {
-                case RowField::TINY:
-                    bindFieldsToBindsArray( tiny );
-                    break;
-                case RowField::SMALL:
-                    bindFieldsToBindsArray( small );
-                    break;
-                case RowField::BIG:
-                    bindFieldsToBindsArray( big );
-                    break;
-                case RowField::FIRST_NAME:
-                    bindFieldsToBindsArray( firstName );
-                    break;
-                default:
-                    /*Code to select all here*/
-                    break;
-            }
-        };
-        ( makeSelection( ts ), ... );
+    MYSQL_BIND* getBinds() {
+        return selection.data();
+    }
+    size_t getBindsSize() {
+        return selection.size();
     }
 };
 
 int main() {
 
-    IntsTableRow row;
-    row.tiny->setValue( 90 );
-    row.big->setValue( 8912345 );
-    row.small->setValue( 3 );
-    row.firstName->setValue( "John" );
+    TableRow row(
+        std::make_unique<TinyInt>( "tiny" ), std::make_unique<SmallInt>( "small" ),
+        std::make_unique<BigInt>( "big" ), std::make_unique<TextType>( "first_name" ) );
 
-    puts( "" );
+    row.fields[0]->set_value( static_cast<signed char>( 90 ) );
+    row.fields[1]->set_value( static_cast<short>( 12 ) );
+    row.fields[2]->set_value( static_cast<long long>( 786543123 ) );
+    row.fields[3]->set_value( "John" );
+
+    row.fields[3]->is_selected = true;
+    row.fields[0]->is_selected = true;
+    row.fields[1]->is_selected = true;
 
     row.displayFields();
 
-    row.selectFields( RowField::TINY, RowField::SMALL, RowField::BIG );
+    row.setBinds();
 
-    int i = 0;
-    std::for_each( row.binds.begin(), row.binds.end(), [&]( const auto& bind ) {
-        std::cout << "row.binds[" << i++
-                  << "].buffer_type:   " << fieldTypes[bind.buffer_type] << '\n';
-    } );
+    auto* binds = row.getBinds();
+    auto size = row.getBindsSize();
 
-    puts( "" );
+    for ( size_t i = 0; i < size; ++i ) {
+        std::cout << "binds[" << i
+                  << "]->buffer_type:   " << fieldTypes[binds[i].buffer_type] << '\n';
+    }
 
     return 0;
 }

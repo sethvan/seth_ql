@@ -2,10 +2,11 @@
 **/Makefile
 **/build/CMakeCache.txt
 **/build/cmake_install.cmake
-**/typetest
-typetest
+**/typestest
+typestest
 .vscode
 createclass
 run
 myvars.h
+build
 

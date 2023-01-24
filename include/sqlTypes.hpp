@@ -3,7 +3,9 @@
 
 #include <mysql/mysql.h>
 
+#include <any>
 #include <cstring>
+#include <iomanip>
 #include <string_view>
 #include <vector>
 
@@ -18,6 +20,7 @@ class SqlType {
     enum_field_types bufferType;
     void* buffer;
     unsigned long long bufferLength;
+    bool is_selected;
 
     SqlType( const char* _fieldName, enum_field_types type, void* _buffer,
              unsigned long long _bufferLength = 0 )
@@ -28,14 +31,17 @@ class SqlType {
           bind( nullptr ),
           bufferType( type ),
           buffer( _buffer ),
-          bufferLength( _bufferLength ) {
+          bufferLength( _bufferLength ),
+          is_selected( false ) {
     }
     virtual ~SqlType() = default;
 
+    virtual void set_value( const std::any& a ) = 0;
+
     virtual void printValue()
         const = 0;  // just to make base class not instantiable, was written before
-                    // deciding for uniformity's sake to add getters and setters to all
-                    // derived classes for uniformity due to TextType's need for them.
+                    // deciding for uniformity's sake to add setters to all derived
+                    // classes for uniformity due to TextType's need for them.
 };
 
 class TinyInt : public SqlType {
@@ -53,8 +59,12 @@ class TinyInt : public SqlType {
     void setValue( signed char sc ) {
         value = sc;
     }
-    virtual void printValue() const override {
-        std::cout << value << std::endl;
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value << '\n';
+    }
+
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<signed char>( a );
     }
 };
 
@@ -73,8 +83,12 @@ class SmallInt : public SqlType {
     void setValue( short sh ) {
         value = sh;
     }
-    virtual void printValue() const override {
-        std::cout << value << std::endl;
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value << '\n';
+    }
+
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<short>( a );
     }
 };
 
@@ -93,8 +107,12 @@ class BigInt : public SqlType {
     void setValue( long long ll ) {
         value = ll;
     }
-    virtual void printValue() const override {
-        std::cout << value << std::endl;
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value << '\n';
+    }
+
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<long long>( a );
     }
 };
 
@@ -121,8 +139,14 @@ class TextType : public SqlType {
                                        // method to change reserve size
         return charVec;
     }
-    virtual void printValue() const override {
-        std::cout << charVec.data() << std::endl;
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << charVec.data() << '\n';
+    }
+
+    void set_value( const std::any& a ) override {
+        const char* newValue = std::any_cast<const char*>( a );
+        std::strcpy( charVec.data(), newValue );
+        length = std::strlen( charVec.data() );
     }
 };
 
