@@ -10,14 +10,15 @@
 #include <vector>
 
 class SqlType {
+   protected:
+    std::string_view fieldName;
+    enum_field_types bufferType;
 
    public:
-    std::string_view fieldName;
     bool isNull;
     bool error;
     unsigned long length;
     MYSQL_BIND* bind;
-    enum_field_types bufferType;
     void* buffer;
     unsigned long long bufferLength;
     bool is_selected;
@@ -25,11 +26,11 @@ class SqlType {
     SqlType( const char* _fieldName, enum_field_types type, void* _buffer,
              unsigned long long _bufferLength = 0 )
         : fieldName( _fieldName ),
+          bufferType( type ),
           isNull( 0 ),
           error( 0 ),
           length( 0 ),
           bind( nullptr ),
-          bufferType( type ),
           buffer( _buffer ),
           bufferLength( _bufferLength ),
           is_selected( false ) {

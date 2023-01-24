@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <tuple>
 #include <vector>
 
 #include "fieldTypes.hpp"
@@ -11,14 +10,14 @@
 const auto fieldTypes = getFieldTypesArray();
 /*
     Was thinking something like this class could be used to set up a prepared statement
-   for a row in a table for creating, modifying or reading (which would be in another
-   class). Once it is constructed, It's MYSQL_BIND array parameter can be bound with a
-   prepared statement that could be executed. If it is a write/modify statement then the
-   values of each field could be updated between statement executions. If it is a read
-   statement, then updated values could be read between executions if they have changed.
+   for a row in a table for creating, modifying or reading. Statement will be prepared in
+   another class. Once it is constructed, It's MYSQL_BIND array parameter can be bound
+   with a prepared statement that could be executed. If it is a write/modify statement
+   then the values of each field could be updated between statement executions. If it is a
+   read statement, then updated values could be read between executions if they have
+   changed.
 
    May decide to make separate classes for rows that are meant to read or write.
-   Need to also consider case where only certain fields are updated.
 */
 
 template <typename... Ptrs>
@@ -28,11 +27,12 @@ class TableRow {
     std::vector<MYSQL_BIND> selection;
 
    public:
-    // same as columns just needed different name for same thing
+    // Points to columns' elements. After object instantiated, do not want column elements
+    // added or deleted, just access for selecting ad modifying.
     std::vector<SqlType*> fields;
 
     TableRow() = delete;
-    TableRow( Ptrs&&... ptrs ) {
+    TableRow( Ptrs&&... ptrs ) {  // to set once the correct order of columns
         ( columns.emplace_back( std::forward<Ptrs>( ptrs ) ), ... );
         for ( size_t i = 0; i < columns.size(); ++i ) {
             fields.emplace_back( columns[i].get() );
