@@ -10,11 +10,10 @@
 #include <vector>
 
 class SqlType {
-   protected:
-    std::string_view fieldName;
-    enum_field_types bufferType;
 
    public:
+    const std::string_view fieldName;
+    const enum_field_types bufferType;
     bool isNull;
     bool error;
     unsigned long length;
