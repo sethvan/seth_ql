@@ -12,4 +12,3 @@ target_link_options( typestest PRIVATE -fsanitize=address -lcurl -lmysqlclient)
 target_compile_options( typestest PRIVATE 
     -Wall -Wextra -Werror -Wl,-z,defs -fwrapv -Og
 )
-

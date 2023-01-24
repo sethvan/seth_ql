@@ -34,6 +34,20 @@ class SqlType {
           bufferLength( _bufferLength ),
           is_selected( false ) {
     }
+
+    void setBind( MYSQL_BIND* targetBind ) {
+        bind = targetBind;
+        std::memset( bind, 0, sizeof( *bind ) );
+        bind->buffer_type = bufferType;
+        bind->buffer = (char*)buffer;
+        bind->is_null = &isNull;
+        bind->length = &length;
+        bind->error = &error;
+        if ( bufferType == MYSQL_TYPE_STRING ) {
+            bind->buffer_length = bufferLength;
+        }
+    }
+
     virtual ~SqlType() = default;
 
     virtual void set_value( const std::any& a ) = 0;

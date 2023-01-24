@@ -44,4 +44,6 @@ const std::array<std::string_view, 256> getFieldTypesArray() {
     return fieldTypes;
 }
 
+extern const std::array<std::string_view, 256> fieldTypes;
+
 #endif  // INCLUDED_FIELDTYPES_H
