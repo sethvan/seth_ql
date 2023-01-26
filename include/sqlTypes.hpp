@@ -17,7 +17,7 @@
 /*
     These are all classes meant to be used in a wrapper for MYSQL_BIND arrays found in binds.hpp.
    These classes are composed of the data types and the enum_field_types ( used to populate the
-   ENUM_BINDS buffer_type field ) that are permitted to be used in prepared statements. There are 6
+   ENUM_BINDS buffer_type field ) that are permitted to be used in prepared statements. There are 7
    C types and 1 MYSQL type used (char, short, int, long long, float, double, MYSQL_TIME and
    char[]). However in the case of char[], various enum_field_types that are valid for receiving
    data as char[] are not permitted to be used for requesting data. This is why I decided to amplify
