@@ -14,15 +14,11 @@
 #include "utilities.h"
 
 /*
-    Was thinking something like this class could be used to set up a prepared statement
-   for a row in a table for creating, modifying or reading. Statement will be prepared in
-   another class. Once it is constructed, It's MYSQL_BIND array parameter can be bound
-   with a prepared statement that could be executed. If it is a write/modify statement
-   then the values of each field could be updated between statement executions. If it is a
-   read statement, then updated values could be read between executions if they have
-   changed.
-
-   May decide to make separate classes for rows that are meant to read or write.
+    Will be used to set up a prepared statement for creating, modifying or reading. Statement will
+   be prepared in another class. Once it is constructed, It's MYSQL_BIND array parameter is bound
+   with a prepared statement that can be executed. If it is a write/modify statement then the values
+   of each field can be updated between statement executions. If it is a read statement, then
+   updated values can be read between executions if they have changed.
 */
 
 template <typename T>
