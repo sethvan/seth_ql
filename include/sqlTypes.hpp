@@ -11,8 +11,6 @@
 
 #define BUFF_SIZE 100
 
-enum class Direction { INPUT, OUTPUT };
-
 class SqlCType {
 
    public:
@@ -26,7 +24,7 @@ class SqlCType {
     unsigned long long bufferLength;
     bool is_selected;
 
-    SqlCType( const char* _fieldName, enum_field_types type, char* _buffer,
+    SqlCType( const char* _fieldName, enum_field_types type, void* _buffer,
               unsigned long long _bufferLength = 0 )
         : fieldName( _fieldName ),
           bufferType( type ),
@@ -74,8 +72,7 @@ class TypeChar : public SqlCType {
 
    public:
     TypeChar() = delete;
-    TypeChar( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_TINY, (char*)&value ) {
+    TypeChar( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_TINY, &value ) {
     }
     signed char getValue() const {
         return value;
@@ -98,8 +95,7 @@ class TypeShort : public SqlCType {
 
    public:
     TypeShort() = delete;
-    TypeShort( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_SHORT, (char*)&value ) {
+    TypeShort( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_SHORT, &value ) {
     }
     short getValue() const {
         return value;
@@ -122,8 +118,7 @@ class TypeInt : public SqlCType {
 
    public:
     TypeInt() = delete;
-    TypeInt( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_LONG, (char*)&value ) {
+    TypeInt( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_LONG, &value ) {
     }
     short getValue() const {
         return value;
@@ -146,8 +141,7 @@ class TypeLL : public SqlCType {
 
    public:
     TypeLL() = delete;
-    TypeLL( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_LONGLONG, (char*)&value ) {
+    TypeLL( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_LONGLONG, &value ) {
     }
     long long getValue() const {
         return value;
@@ -170,8 +164,7 @@ class TypeFloat : public SqlCType {
 
    public:
     TypeFloat() = delete;
-    TypeFloat( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_FLOAT, (char*)&value ) {
+    TypeFloat( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_FLOAT, &value ) {
     }
     float getValue() const {
         return value;
@@ -194,8 +187,7 @@ class TypeDouble : public SqlCType {
 
    public:
     TypeDouble() = delete;
-    TypeDouble( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_FLOAT, (char*)&value ) {
+    TypeDouble( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_FLOAT, &value ) {
     }
     double getValue() const {
         return value;
@@ -217,8 +209,7 @@ class TypeMysqlTime : public SqlCType {
 
    public:
     TypeMysqlTime() = delete;
-    TypeMysqlTime( const char* _fieldName )
-        : SqlCType( _fieldName, MYSQL_TYPE_TIME, (char*)&value ) {
+    TypeMysqlTime( const char* _fieldName ) : SqlCType( _fieldName, MYSQL_TYPE_TIME, &value ) {
     }
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << "MYSQL_TIME Value";
@@ -234,10 +225,9 @@ class TypeCharArray : public SqlCType {
 
    public:
     TypeCharArray() = delete;
-    TypeCharArray(
-        const char* _fieldName,
-        enum_field_types type )  // will be set better than this later, meanwhile be
-                                 // careful to set correct type when creating
+    TypeCharArray( const char* _fieldName,
+                   enum_field_types type )  // will be set better than this later, meanwhile be
+                                            // careful to set correct type when creating
         : SqlCType( _fieldName, type, value, BUFF_SIZE ) {
     }
     const char* getValue() {
