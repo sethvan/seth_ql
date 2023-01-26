@@ -44,3 +44,20 @@ static const std::array<std::string_view, 256> getFieldTypesArray() {
 }
 
 const std::array<std::string_view, 256> fieldTypes = getFieldTypesArray();
+
+// Below are NOT all the enum_field_types for such data but just the permitted buffer types for use
+// in prepared statements
+bool isCharArray( enum_field_types type ) {  // The only char[] buffer types permitted in Response
+    int enumValue = static_cast<int>( type );
+    return ( ( enumValue > 248 && enumValue < 255 ) || enumValue == 246 );
+}
+
+bool isCharArrayReq( enum_field_types type ) {  // The only buffer types permitted in char[]
+                                                // request. It is subset of above
+    return ( type == MYSQL_TYPE_BLOB || type == MYSQL_TYPE_STRING );
+}
+
+bool isTimeType( enum_field_types type ) {
+    int enumValue = static_cast<int>( type );
+    return ( enumValue == 7 || ( enumValue > 9 && enumValue < 13 ) );
+}

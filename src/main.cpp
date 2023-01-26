@@ -4,9 +4,9 @@
 #include <initializer_list>
 #include <iostream>
 
+#include "binds.hpp"
 #include "myvars.h"
 #include "sqlTypes.hpp"
-#include "tablerow.h"
 #include "utilities.h"
 
 int main() {
@@ -15,7 +15,7 @@ int main() {
     int count = 0;
     MYSQL* db_conn;
     MYSQL_STMT* stmt;
-    std::string_view getRow( "SELECT * FROM bank_account WHERE acc_no=?" );
+    std::string_view getRow( "SELECT * FROM bank_account WHERE lname=? AND acc_no > ?" );
 
     if ( !mysql_library_init( 0, nullptr, nullptr ) ) {
 
@@ -27,34 +27,31 @@ int main() {
 
                     if ( !mysql_stmt_prepare( stmt, getRow.data(), getRow.length() ) ) {
 
-                        TableRow bank_account_request( make_vector<SqlCType>(
-                            std::make_unique<TypeInt>( "acc_no" ),
-                            std::make_unique<TypeCharArray>( "fname", MYSQL_TYPE_STRING ),
-                            std::make_unique<TypeCharArray>( "lname", MYSQL_TYPE_STRING ),
-                            std::make_unique<TypeCharArray>( "balance", MYSQL_TYPE_STRING ) ) );
+                        Binds<RequestCType> requestBinds( make_vector<RequestCType>(
+                            std::make_unique<TypeCharArrayRequest>( "lname", MYSQL_TYPE_STRING ),
+                            std::make_unique<TypeIntRequest>( "acc_no" ) ) );
+                        requestBinds.setBinds();
 
-                        bank_account_request.setBinds(
-                            std::initializer_list<bool>( { true, false, false, false } ) );
+                        if ( !mysql_stmt_bind_param( stmt, requestBinds.getBinds() ) ) {
 
-                        if ( !mysql_stmt_bind_param( stmt, bank_account_request.getBinds() ) ) {
+                            Binds<ResponseCType> responseBinds( make_vector<ResponseCType>(
+                                std::make_unique<TypeIntResponse>( "acc_no" ),
+                                std::make_unique<TypeCharArrayResponse>( "fname",
+                                                                         MYSQL_TYPE_VAR_STRING ),
+                                std::make_unique<TypeCharArrayResponse>( "lname",
+                                                                         MYSQL_TYPE_VAR_STRING ),
+                                std::make_unique<TypeDoubleResponse>( "balance" ) ) );
+                            responseBinds.setBinds();
 
-                            TableRow bank_account_response( make_vector<SqlCType>(
-                                std::make_unique<TypeInt>( "acc_no" ),
-                                std::make_unique<TypeCharArray>( "fname", MYSQL_TYPE_VAR_STRING ),
-                                std::make_unique<TypeCharArray>( "lname", MYSQL_TYPE_VAR_STRING ),
-                                std::make_unique<TypeCharArray>( "balance",
-                                                                 MYSQL_TYPE_NEWDECIMAL ) ) );
-
-                            bank_account_response.setBinds(
-                                std::initializer_list<bool>( { true, true, true, true } ) );
-
-                            for ( int i = 100; i < 109; ++i ) {
-                                bank_account_request.fields[0]->set_value( i );
+                            for ( int i = 100; i < 102; ++i ) {
+                                requestBinds.fields[0]->set_value( "Hankins" );
+                                requestBinds.fields[1]->set_value( i );
+                                count = 0;
 
                                 if ( !mysql_stmt_execute( stmt ) ) {
 
-                                    if ( !mysql_stmt_bind_result(
-                                             stmt, bank_account_response.getBinds() ) ) {
+                                    if ( !mysql_stmt_bind_result( stmt,
+                                                                  responseBinds.getBinds() ) ) {
 
                                         MYSQL_RES* result;
                                         if ( ( result = mysql_stmt_result_metadata( stmt ) ) ) {
@@ -71,15 +68,17 @@ int main() {
                                                           << '-' << '\n'
                                                           << std::setfill( ' ' );
                                             }
+
                                             while ( !mysql_stmt_fetch( stmt ) ) {
                                                 std::for_each(
-                                                    bank_account_response.fields.begin(),
-                                                    bank_account_response.fields.end(),
-                                                    []( SqlCType* ptr ) { ptr->printValue(); } );
+                                                    responseBinds.fields.begin(),
+                                                    responseBinds.fields.end(),
+                                                    []( auto* ptr ) { ptr->printValue(); } );
                                                 puts( "" );
                                             }
 
                                             mysql_free_result( result );
+                                            puts( "" );
                                         }
                                     }
                                     else {

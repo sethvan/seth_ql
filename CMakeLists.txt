@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.16)
 project( typestest LANGUAGES "CXX" )
 
 add_executable( typestest 
-src/tablerow.cpp
 src/utilities.cpp
 src/main.cpp )
 

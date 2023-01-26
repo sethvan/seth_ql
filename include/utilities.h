@@ -1,6 +1,8 @@
 #ifndef INCLUDED_UTILITIES_H
 #define INCLUDED_UTILITIES_H
 
+#include <mysql/mysql.h>
+
 #include <memory>
 #include <vector>
 
@@ -13,5 +15,9 @@ auto make_vector( Ptrs&&... ptrs ) {
 }
 
 extern const std::array<std::string_view, 256> fieldTypes;
+
+bool isCharArray( enum_field_types type );
+bool isCharArrayReq( enum_field_types type );
+bool isTimeType( enum_field_types type );
 
 #endif  // INCLUDED_UTILITIES_H
