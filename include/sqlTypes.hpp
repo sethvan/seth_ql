@@ -97,12 +97,7 @@ class TypeCharRequest : public RequestCType {
     TypeCharRequest( const char* _fieldName )
         : RequestCType( _fieldName, MYSQL_TYPE_TINY, &value ) {
     }
-    signed char getValue() const {
-        return value;
-    }
-    void setValue( signed char sc ) {
-        value = sc;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -121,9 +116,7 @@ class TypeCharResponse : public ResponseCType {
     TypeCharResponse( const char* _fieldName )
         : ResponseCType( _fieldName, MYSQL_TYPE_TINY, &value ) {
     }
-    signed char getValue() const {
-        return value;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -138,12 +131,7 @@ class TypeShortRequest : public RequestCType {
     TypeShortRequest( const char* _fieldName )
         : RequestCType( _fieldName, MYSQL_TYPE_SHORT, &value ) {
     }
-    short getValue() const {
-        return value;
-    }
-    void setValue( short sh ) {
-        value = sh;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -162,9 +150,7 @@ class TypeShortResponse : public ResponseCType {
     TypeShortResponse( const char* _fieldName )
         : ResponseCType( _fieldName, MYSQL_TYPE_SHORT, &value ) {
     }
-    short getValue() const {
-        return value;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -178,12 +164,7 @@ class TypeIntRequest : public RequestCType {
     TypeIntRequest() = delete;
     TypeIntRequest( const char* _fieldName ) : RequestCType( _fieldName, MYSQL_TYPE_LONG, &value ) {
     }
-    short getValue() const {
-        return value;
-    }
-    void setValue( int i ) {
-        value = i;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -202,9 +183,6 @@ class TypeIntResponse : public ResponseCType {
     TypeIntResponse( const char* _fieldName )
         : ResponseCType( _fieldName, MYSQL_TYPE_LONG, &value ) {
     }
-    short getValue() const {
-        return value;
-    }
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -219,12 +197,7 @@ class TypeLLRequest : public RequestCType {
     TypeLLRequest( const char* _fieldName )
         : RequestCType( _fieldName, MYSQL_TYPE_LONGLONG, &value ) {
     }
-    long long getValue() const {
-        return value;
-    }
-    void setValue( long long ll ) {
-        value = ll;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -243,9 +216,7 @@ class TypeLLResponse : public ResponseCType {
     TypeLLResponse( const char* _fieldName )
         : ResponseCType( _fieldName, MYSQL_TYPE_LONGLONG, &value ) {
     }
-    long long getValue() const {
-        return value;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -260,12 +231,7 @@ class TypeFloatRequest : public RequestCType {
     TypeFloatRequest( const char* _fieldName )
         : RequestCType( _fieldName, MYSQL_TYPE_FLOAT, &value ) {
     }
-    float getValue() const {
-        return value;
-    }
-    void setValue( float f ) {
-        value = f;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -284,9 +250,7 @@ class TypeFloatResponse : public ResponseCType {
     TypeFloatResponse( const char* _fieldName )
         : ResponseCType( _fieldName, MYSQL_TYPE_FLOAT, &value ) {
     }
-    float getValue() const {
-        return value;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -301,12 +265,7 @@ class TypeDoubleRequest : public RequestCType {
     TypeDoubleRequest( const char* _fieldName )
         : RequestCType( _fieldName, MYSQL_TYPE_DOUBLE, &value ) {
     }
-    double getValue() const {
-        return value;
-    }
-    void setValue( double f ) {
-        value = f;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -324,9 +283,7 @@ class TypeDoubleResponse : public ResponseCType {
     TypeDoubleResponse( const char* _fieldName )
         : ResponseCType( _fieldName, MYSQL_TYPE_DOUBLE, &value ) {
     }
-    double getValue() const {
-        return value;
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -381,13 +338,7 @@ class TypeCharArrayRequest : public RequestCType {
             throw std::runtime_error( "Invalid buffer type given for TypeCharArrayRequest" );
         }
     }
-    const char* getValue() {
-        return value;
-    }
-    void setValue( const char* newValue ) {
-        std::strcpy( value, newValue );
-        length = std::strlen( value );
-    }
+
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
     }
@@ -409,9 +360,6 @@ class TypeCharArrayResponse : public ResponseCType {
         if ( !isCharArray( type ) ) {
             throw std::runtime_error( "Invalid buffer type given for TypeCharArrayResponse" );
         }
-    }
-    const char* getValue() {
-        return value;
     }
     void printValue() const override {
         std::cout << std::left << std::setw( 30 ) << value;
