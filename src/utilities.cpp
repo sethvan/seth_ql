@@ -1,12 +1,11 @@
-#ifndef INCLUDED_FIELDTYPES_H
-#define INCLUDED_FIELDTYPES_H
+#include "utilities.h"
 
 #include <algorithm>
 #include <array>
 #include <initializer_list>
 #include <string_view>
 
-const std::array<std::string_view, 256> getFieldTypesArray() {
+static const std::array<std::string_view, 256> getFieldTypesArray() {
     std::array<std::string_view, 256> fieldTypes{
         "MYSQL_TYPE_DECIMAL",
         "MYSQL_TYPE_TINY",
@@ -44,6 +43,4 @@ const std::array<std::string_view, 256> getFieldTypesArray() {
     return fieldTypes;
 }
 
-extern const std::array<std::string_view, 256> fieldTypes;
-
-#endif  // INCLUDED_FIELDTYPES_H
+const std::array<std::string_view, 256> fieldTypes = getFieldTypesArray();

@@ -9,7 +9,11 @@
 #include <string_view>
 #include <vector>
 
-class SqlType {
+#define BUFF_SIZE 100
+
+enum class Direction { INPUT, OUTPUT };
+
+class SqlCType {
 
    public:
     const std::string_view fieldName;
@@ -22,8 +26,8 @@ class SqlType {
     unsigned long long bufferLength;
     bool is_selected;
 
-    SqlType( const char* _fieldName, enum_field_types type, void* _buffer,
-             unsigned long long _bufferLength = 0 )
+    SqlCType( const char* _fieldName, enum_field_types type, char* _buffer,
+              unsigned long long _bufferLength = 0 )
         : fieldName( _fieldName ),
           bufferType( type ),
           isNull( 0 ),
@@ -43,12 +47,18 @@ class SqlType {
         bind->is_null = &isNull;
         bind->length = &length;
         bind->error = &error;
-        if ( bufferType == MYSQL_TYPE_STRING ) {
+        if ( bufferType == MYSQL_TYPE_VAR_STRING || bufferType == MYSQL_TYPE_STRING ||
+             bufferType == MYSQL_TYPE_NEWDECIMAL ) {
             bind->buffer_length = bufferLength;
         }
     }
 
-    virtual ~SqlType() = default;
+    // MYSQL_TIME* timeStruct() {
+
+    //     return bufferType ==
+    // }
+
+    virtual ~SqlCType() = default;
 
     virtual void set_value( const std::any& a ) = 0;
 
@@ -58,14 +68,14 @@ class SqlType {
                     // classes for uniformity due to TextType's need for them.
 };
 
-class TinyInt : public SqlType {
+class TypeChar : public SqlCType {
    private:
     signed char value;
 
    public:
-    TinyInt() = delete;
-    TinyInt( const char* _fieldName, signed char rhs = 0 )
-        : SqlType( _fieldName, MYSQL_TYPE_TINY, &value ), value( rhs ) {
+    TypeChar() = delete;
+    TypeChar( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_TINY, (char*)&value ) {
     }
     signed char getValue() const {
         return value;
@@ -74,7 +84,7 @@ class TinyInt : public SqlType {
         value = sc;
     }
     void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value << '\n';
+        std::cout << std::left << std::setw( 30 ) << value;
     }
 
     void set_value( const std::any& a ) override {
@@ -82,14 +92,14 @@ class TinyInt : public SqlType {
     }
 };
 
-class SmallInt : public SqlType {
+class TypeShort : public SqlCType {
    private:
     short int value;
 
    public:
-    SmallInt() = delete;
-    SmallInt( const char* _fieldName, short int rhs = 0 )
-        : SqlType( _fieldName, MYSQL_TYPE_SHORT, &value ), value( rhs ) {
+    TypeShort() = delete;
+    TypeShort( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_SHORT, (char*)&value ) {
     }
     short getValue() const {
         return value;
@@ -98,7 +108,7 @@ class SmallInt : public SqlType {
         value = sh;
     }
     void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value << '\n';
+        std::cout << std::left << std::setw( 30 ) << value;
     }
 
     void set_value( const std::any& a ) override {
@@ -106,14 +116,38 @@ class SmallInt : public SqlType {
     }
 };
 
-class BigInt : public SqlType {
+class TypeInt : public SqlCType {
+   private:
+    int value;
+
+   public:
+    TypeInt() = delete;
+    TypeInt( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_LONG, (char*)&value ) {
+    }
+    short getValue() const {
+        return value;
+    }
+    void setValue( int i ) {
+        value = i;
+    }
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value;
+    }
+
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<int>( a );
+    }
+};
+
+class TypeLL : public SqlCType {
    private:
     long long value;
 
    public:
-    BigInt() = delete;
-    BigInt( const char* _fieldName, long long rhs = 0 )
-        : SqlType( _fieldName, MYSQL_TYPE_LONGLONG, &value ), value( rhs ) {
+    TypeLL() = delete;
+    TypeLL( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_LONGLONG, (char*)&value ) {
     }
     long long getValue() const {
         return value;
@@ -122,7 +156,7 @@ class BigInt : public SqlType {
         value = ll;
     }
     void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value << '\n';
+        std::cout << std::left << std::setw( 30 ) << value;
     }
 
     void set_value( const std::any& a ) override {
@@ -130,37 +164,98 @@ class BigInt : public SqlType {
     }
 };
 
-class TextType : public SqlType {
+class TypeFloat : public SqlCType {
    private:
-    std::vector<char> charVec;
+    float value;
 
    public:
-    TextType() = delete;
-    TextType( const char* _fieldName, const char* _value = "" )
-        : SqlType( _fieldName, MYSQL_TYPE_STRING, charVec.data(), 100 ) {
-        charVec.reserve( bufferLength );
-        std::strcpy( charVec.data(), _value );
-        length = std::strlen( charVec.data() );
+    TypeFloat() = delete;
+    TypeFloat( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_FLOAT, (char*)&value ) {
     }
-    const char* getValue() {
-        return charVec.data();
+    float getValue() const {
+        return value;
     }
-    void setValue( const char* newValue ) {
-        std::strcpy( charVec.data(), newValue );
-        length = std::strlen( charVec.data() );
-    }
-    std::vector<char>& getCharVec() {  // placeholder because I think I maybe need a
-                                       // method to change reserve size
-        return charVec;
+    void setValue( float f ) {
+        value = f;
     }
     void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << charVec.data() << '\n';
+        std::cout << std::left << std::setw( 30 ) << value;
+    }
+
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<float>( a );
+    }
+};
+
+class TypeDouble : public SqlCType {
+   private:
+    double value;
+
+   public:
+    TypeDouble() = delete;
+    TypeDouble( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_FLOAT, (char*)&value ) {
+    }
+    double getValue() const {
+        return value;
+    }
+    void setValue( double f ) {
+        value = f;
+    }
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value;
+    }
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<double>( a );
+    }
+};
+
+class TypeMysqlTime : public SqlCType {
+   private:
+    MYSQL_TIME value;
+
+   public:
+    TypeMysqlTime() = delete;
+    TypeMysqlTime( const char* _fieldName )
+        : SqlCType( _fieldName, MYSQL_TYPE_TIME, (char*)&value ) {
+    }
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << "MYSQL_TIME Value";
+    }
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<MYSQL_TIME>( a );
+    }
+};
+
+class TypeCharArray : public SqlCType {
+   private:
+    char value[BUFF_SIZE];
+
+   public:
+    TypeCharArray() = delete;
+    TypeCharArray(
+        const char* _fieldName,
+        enum_field_types type )  // will be set better than this later, meanwhile be
+                                 // careful to set correct type when creating
+        : SqlCType( _fieldName, type, value, BUFF_SIZE ) {
+    }
+    const char* getValue() {
+        return value;
+    }
+    void setValue( const char* newValue ) {
+        std::strcpy( value, newValue );
+        length = std::strlen( value );
+    }
+
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value;
     }
 
     void set_value( const std::any& a ) override {
         const char* newValue = std::any_cast<const char*>( a );
-        std::strcpy( charVec.data(), newValue );
-        length = std::strlen( charVec.data() );
+        std::strcpy( value, newValue );
+        length = std::strlen( value );
     }
 };
 
