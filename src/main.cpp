@@ -28,7 +28,8 @@ int main() {
                     if ( !mysql_stmt_prepare( stmt, getRow.data(), getRow.length() ) ) {
 
                         Binds<RequestCType> requestBinds( make_vector<RequestCType>(
-                            std::make_unique<TypeCharArrayRequest>( "lname", MYSQL_TYPE_STRING ),
+                            std::make_unique<TypeCharArrayRequest>( "lname", MYSQL_TYPE_STRING,
+                                                                    100 ),
                             std::make_unique<TypeIntRequest>( "acc_no" ) ) );
                         requestBinds.setBinds();
 
@@ -36,12 +37,12 @@ int main() {
 
                             Binds<ResponseCType> responseBinds( make_vector<ResponseCType>(
                                 std::make_unique<TypeIntResponse>( "acc_no" ),
-                                std::make_unique<TypeCharArrayResponse>( "fname",
-                                                                         MYSQL_TYPE_VAR_STRING ),
-                                std::make_unique<TypeCharArrayResponse>( "lname",
-                                                                         MYSQL_TYPE_VAR_STRING ),
                                 std::make_unique<TypeCharArrayResponse>(
-                                    "balance", MYSQL_TYPE_NEWDECIMAL ) ) );
+                                    "fname", MYSQL_TYPE_VAR_STRING, 100 ),
+                                std::make_unique<TypeCharArrayResponse>(
+                                    "lname", MYSQL_TYPE_VAR_STRING, 100 ),
+                                std::make_unique<TypeCharArrayResponse>(
+                                    "balance", MYSQL_TYPE_NEWDECIMAL, 100 ) ) );
                             responseBinds.setBinds();
 
                             for ( int i = 100; i < 102; ++i ) {
@@ -61,6 +62,7 @@ int main() {
                                                 MYSQL_FIELD* field;
                                                 std::cout << '\n';
                                                 while ( ( field = mysql_fetch_field( result ) ) ) {
+
                                                     std::cout << std::left << std::setw( 30 )
                                                               << field->name;
                                                 }

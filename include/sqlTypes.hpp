@@ -12,8 +12,6 @@
 
 #include "utilities.h"
 
-static constexpr int BUFF_SIZE = 100;
-
 /*
     These are all classes meant to be used in a wrapper for MYSQL_BIND arrays found in
    binds.hpp. These classes are composed of the data types and the enum_field_types ( used to
@@ -26,6 +24,8 @@ static constexpr int BUFF_SIZE = 100;
 */
 
 class SqlCType {
+   protected:
+    std::vector<char> charVec;
 
    public:
     const std::string_view fieldName;
@@ -49,6 +49,13 @@ class SqlCType {
           buffer( _buffer ),
           bufferLength( _bufferLength ),
           is_selected( true ) {
+        if ( isCharArray( bufferType ) ) {
+
+            for ( unsigned long long i = 0; i < bufferLength; ++i ) {
+                charVec.push_back( '\0' );
+            }
+            buffer = charVec.data();
+        }
     }
 
     void setBind( MYSQL_BIND* targetBind ) {
@@ -177,42 +184,40 @@ class TypeMysqlTimeResponse : public ResponseCType {
 };
 
 class TypeCharArrayRequest : public RequestCType {
-   private:
-    char value[BUFF_SIZE];
 
    public:
     TypeCharArrayRequest() = delete;
-    TypeCharArrayRequest( const char* _fieldName, enum_field_types type )
-        : RequestCType( _fieldName, type, value, BUFF_SIZE ) {
+    TypeCharArrayRequest( const char* _fieldName, enum_field_types type,
+                          unsigned long long _bufferLength )
+        : RequestCType( _fieldName, type, nullptr, _bufferLength ) {
         if ( !isCharArrayReq( type ) ) {
             throw std::runtime_error( "Invalid buffer type given for TypeCharArrayRequest" );
         }
     }
 
     void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
+        std::cout << std::left << std::setw( 30 ) << charVec.data();
     }
     void set_value( const std::any& a ) override {
         const char* newValue = std::any_cast<const char*>( a );
-        std::strcpy( value, newValue );
-        length = std::strlen( value );
+        std::strcpy( charVec.data(), newValue );
+        length = std::strlen( charVec.data() );
     }
 };
 
 class TypeCharArrayResponse : public ResponseCType {
-   private:
-    char value[BUFF_SIZE];
 
    public:
     TypeCharArrayResponse() = delete;
-    TypeCharArrayResponse( const char* _fieldName, enum_field_types type )
-        : ResponseCType( _fieldName, type, value, BUFF_SIZE ) {
+    TypeCharArrayResponse( const char* _fieldName, enum_field_types type,
+                           unsigned long long _bufferLength )
+        : ResponseCType( _fieldName, type, nullptr, _bufferLength ) {
         if ( !isCharArray( type ) ) {
             throw std::runtime_error( "Invalid buffer type given for TypeCharArrayResponse" );
         }
     }
     void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
+        std::cout << std::left << std::setw( 30 ) << charVec.data();
     }
 };
 
