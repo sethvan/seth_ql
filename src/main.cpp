@@ -40,7 +40,8 @@ int main() {
                                                                          MYSQL_TYPE_VAR_STRING ),
                                 std::make_unique<TypeCharArrayResponse>( "lname",
                                                                          MYSQL_TYPE_VAR_STRING ),
-                                std::make_unique<TypeDoubleResponse>( "balance" ) ) );
+                                std::make_unique<TypeCharArrayResponse>(
+                                    "balance", MYSQL_TYPE_NEWDECIMAL ) ) );
                             responseBinds.setBinds();
 
                             for ( int i = 100; i < 102; ++i ) {

@@ -12,17 +12,17 @@
 
 #include "utilities.h"
 
-#define BUFF_SIZE 100
+static constexpr int BUFF_SIZE = 100;
 
 /*
-    These are all classes meant to be used in a wrapper for MYSQL_BIND arrays found in binds.hpp.
-   These classes are composed of the data types and the enum_field_types ( used to populate the
-   ENUM_BINDS buffer_type field ) that are permitted to be used in prepared statements. There are 8
-   C types and 1 MYSQL type used (char, short, int, long long, float, double, MYSQL_TIME and
-   char[]). However in the case of char[], various enum_field_types that are valid for receiving
-   data as char[] are not permitted to be used for requesting data. This is why I decided to amplify
-   this class hierarchy using interfaces RequestCType and ResponseCType and as well change the
-   wrapper to a template class.
+    These are all classes meant to be used in a wrapper for MYSQL_BIND arrays found in
+   binds.hpp. These classes are composed of the data types and the enum_field_types ( used to
+   populate the ENUM_BINDS buffer_type field ) that are permitted to be used in prepared
+   statements. There are 8 C types and 1 MYSQL type used (char, short, int, long long, float,
+   double, MYSQL_TIME and char[]). However in the case of char[], various enum_field_types that
+   are valid for receiving data as char[] are not permitted to be used for requesting data. This
+   is why I decided to amplify this class hierarchy using interfaces RequestCType and
+   ResponseCType and as well change the wrapper to a template class.
 */
 
 class SqlCType {
@@ -79,6 +79,25 @@ class RequestCType : public SqlCType {
     virtual void set_value( const std::any& a ) = 0;
 };
 
+// The idea for these templates from reddit user u/IyeOnline
+template <typename T, enum_field_types Type>
+class TypeRequestImpl : public RequestCType {
+    T value;
+
+   public:
+    TypeRequestImpl() = delete;
+    TypeRequestImpl( const char* _fieldName ) : RequestCType( _fieldName, Type, &value ) {
+    }
+
+    void printValue() const override {
+        std::cout << std::left << std::setw( 30 ) << value;
+    }
+
+    void set_value( const std::any& a ) override {
+        value = std::any_cast<T>( a );
+    }
+};
+
 class ResponseCType : public SqlCType {
    public:
     ResponseCType( const char* _fieldName, enum_field_types type, void* _buffer,
@@ -88,33 +107,13 @@ class ResponseCType : public SqlCType {
     virtual ~ResponseCType() = default;
 };
 
-class TypeCharRequest : public RequestCType {
-   private:
-    signed char value;
+template <typename T, enum_field_types Type>
+class TypeResponseImpl : public ResponseCType {
+    T value;
 
    public:
-    TypeCharRequest() = delete;
-    TypeCharRequest( const char* _fieldName )
-        : RequestCType( _fieldName, MYSQL_TYPE_TINY, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-
-    void set_value( const std::any& a ) override {
-        value = std::any_cast<signed char>( a );
-    }
-};
-
-class TypeCharResponse : public ResponseCType {
-   private:
-    signed char value;
-
-   public:
-    TypeCharResponse() = delete;
-    TypeCharResponse( const char* _fieldName )
-        : ResponseCType( _fieldName, MYSQL_TYPE_TINY, &value ) {
+    TypeResponseImpl() = delete;
+    TypeResponseImpl( const char* _fieldName ) : ResponseCType( _fieldName, Type, &value ) {
     }
 
     void printValue() const override {
@@ -122,172 +121,23 @@ class TypeCharResponse : public ResponseCType {
     }
 };
 
-class TypeShortRequest : public RequestCType {
-   private:
-    short int value;
+using TypeCharRequest = TypeRequestImpl<signed char, MYSQL_TYPE_TINY>;
+using TypeCharResponse = TypeResponseImpl<signed char, MYSQL_TYPE_TINY>;
 
-   public:
-    TypeShortRequest() = delete;
-    TypeShortRequest( const char* _fieldName )
-        : RequestCType( _fieldName, MYSQL_TYPE_SHORT, &value ) {
-    }
+using TypeShortRequest = TypeRequestImpl<short, MYSQL_TYPE_SHORT>;
+using TypeShortResponse = TypeResponseImpl<short, MYSQL_TYPE_SHORT>;
 
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
+using TypeIntRequest = TypeRequestImpl<int, MYSQL_TYPE_LONG>;
+using TypeIntResponse = TypeResponseImpl<int, MYSQL_TYPE_LONG>;
 
-    void set_value( const std::any& a ) override {
-        value = std::any_cast<short>( a );
-    }
-};
+using TypeLLRequest = TypeRequestImpl<long long, MYSQL_TYPE_LONGLONG>;
+using TypeLLResponse = TypeResponseImpl<long long, MYSQL_TYPE_LONGLONG>;
 
-class TypeShortResponse : public ResponseCType {
-   private:
-    short int value;
+using TypeFloatRequest = TypeRequestImpl<float, MYSQL_TYPE_FLOAT>;
+using TypeFloatResponse = TypeResponseImpl<float, MYSQL_TYPE_FLOAT>;
 
-   public:
-    TypeShortResponse() = delete;
-    TypeShortResponse( const char* _fieldName )
-        : ResponseCType( _fieldName, MYSQL_TYPE_SHORT, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-};
-
-class TypeIntRequest : public RequestCType {
-   private:
-    int value;
-
-   public:
-    TypeIntRequest() = delete;
-    TypeIntRequest( const char* _fieldName ) : RequestCType( _fieldName, MYSQL_TYPE_LONG, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-
-    void set_value( const std::any& a ) override {
-        value = std::any_cast<int>( a );
-    }
-};
-
-class TypeIntResponse : public ResponseCType {
-   private:
-    int value;
-
-   public:
-    TypeIntResponse() = delete;
-    TypeIntResponse( const char* _fieldName )
-        : ResponseCType( _fieldName, MYSQL_TYPE_LONG, &value ) {
-    }
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-};
-
-class TypeLLRequest : public RequestCType {
-   private:
-    long long value;
-
-   public:
-    TypeLLRequest() = delete;
-    TypeLLRequest( const char* _fieldName )
-        : RequestCType( _fieldName, MYSQL_TYPE_LONGLONG, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-
-    void set_value( const std::any& a ) override {
-        value = std::any_cast<long long>( a );
-    }
-};
-
-class TypeLLResponse : public ResponseCType {
-   private:
-    long long value;
-
-   public:
-    TypeLLResponse() = delete;
-    TypeLLResponse( const char* _fieldName )
-        : ResponseCType( _fieldName, MYSQL_TYPE_LONGLONG, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-};
-
-class TypeFloatRequest : public RequestCType {
-   private:
-    float value;
-
-   public:
-    TypeFloatRequest() = delete;
-    TypeFloatRequest( const char* _fieldName )
-        : RequestCType( _fieldName, MYSQL_TYPE_FLOAT, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-
-    void set_value( const std::any& a ) override {
-        value = std::any_cast<float>( a );
-    }
-};
-
-class TypeFloatResponse : public ResponseCType {
-   private:
-    float value;
-
-   public:
-    TypeFloatResponse() = delete;
-    TypeFloatResponse( const char* _fieldName )
-        : ResponseCType( _fieldName, MYSQL_TYPE_FLOAT, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-};
-
-class TypeDoubleRequest : public RequestCType {
-   private:
-    double value;
-
-   public:
-    TypeDoubleRequest() = delete;
-    TypeDoubleRequest( const char* _fieldName )
-        : RequestCType( _fieldName, MYSQL_TYPE_DOUBLE, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-    void set_value( const std::any& a ) override {
-        value = std::any_cast<double>( a );
-    }
-};
-
-class TypeDoubleResponse : public ResponseCType {
-   private:
-    double value;
-
-   public:
-    TypeDoubleResponse() = delete;
-    TypeDoubleResponse( const char* _fieldName )
-        : ResponseCType( _fieldName, MYSQL_TYPE_DOUBLE, &value ) {
-    }
-
-    void printValue() const override {
-        std::cout << std::left << std::setw( 30 ) << value;
-    }
-};
+using TypeDoubleRequest = TypeRequestImpl<double, MYSQL_TYPE_DOUBLE>;
+using TypeDoubleResponse = TypeResponseImpl<double, MYSQL_TYPE_DOUBLE>;
 
 class TypeMysqlTimeRequest : public RequestCType {
    private:
