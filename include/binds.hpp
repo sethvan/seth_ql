@@ -58,13 +58,13 @@ Binds<T>::Binds( std::vector<std::unique_ptr<T>> _columns ) : columns( std::move
 template <typename T>
 void Binds<T>::displayFields() const {
     puts( "" );
-    std::cout << std::left << std::setw( 30 ) << "Field Name";
+    std::cout << std::left << std::setw( 45 ) << "Field Name";
     std::cout << std::left << std::setw( 30 ) << "Field Type";
     std::cout << std::left << std::setw( 30 ) << "Field Value" << '\n';
-    std::cout << std::left << std::setw( 90 ) << std::setfill( '-' ) << '-' << std::setfill( ' ' )
+    std::cout << std::left << std::setw( 105 ) << std::setfill( '-' ) << '-' << std::setfill( ' ' )
               << '\n';
     std::for_each( fields.begin(), fields.end(), [&]( const auto& o ) {
-        std::cout << std::left << std::setw( 30 ) << o->fieldName;
+        std::cout << std::left << std::setw( 45 ) << o->fieldName;
         std::cout << std::left << std::setw( 30 ) << fieldTypes[o->bufferType];
         o->printValue();
         std::cout << std::endl;

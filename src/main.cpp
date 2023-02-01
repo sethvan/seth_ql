@@ -4,10 +4,11 @@
 #include <initializer_list>
 #include <iostream>
 
+#include "_generated/mybankBinds.h"
+#include "_generated/performance_schemaBinds.h"
 #include "binds.hpp"
 #include "createDBTableBinds.h"
 #include "getDBTables.h"
-#include "mybank_binds.h"
 #include "myvars.h"
 #include "sqlTypes.hpp"
 
@@ -17,7 +18,8 @@ int main() {
     int count = 0;
     MYSQL* db_conn;
     MYSQL_STMT* stmt;
-    std::string_view getRow( "SELECT * FROM bank_account WHERE acc_no=?" );
+    std::string_view getRow(
+        "SELECT * FROM table_lock_waits_summary_by_table WHERE AVG_TIMER_WAIT=?" );
 
     if ( !mysql_library_init( 0, nullptr, nullptr ) ) {
 
@@ -29,17 +31,20 @@ int main() {
 
                     if ( !mysql_stmt_prepare( stmt, getRow.data(), getRow.length() ) ) {
 
-                        auto requestBinds = bank_account_request_bind();
-                        requestBinds.setBinds(
-                            std::initializer_list<bool>{ true, false, false, false } );
+                        Binds<InputCType> requestBinds( make_vector<InputCType>(
+                            std::make_unique<
+                                TypeInputImpl<unsigned long long, MYSQL_TYPE_LONGLONG>>(
+                                "AVG_TIMER_WAIT" ) ) );
+                        requestBinds.setBinds();
 
                         if ( !mysql_stmt_bind_param( stmt, requestBinds.getBinds() ) ) {
 
-                            auto responseBinds = bank_account_response_bind();
+                            auto responseBinds = table_lock_waits_summary_by_tableOutputBinds();
                             responseBinds.setBinds();
 
-                            for ( int i = 100; i < 109; ++i ) {
-                                requestBinds.fields[0]->set_value( i );
+                            for ( int i = 100; i < 101; ++i ) {
+                                requestBinds.fields[0]->set_value(
+                                    static_cast<unsigned long long>( 2499222 ) );
 
                                 if ( !mysql_stmt_execute( stmt ) ) {
 
@@ -54,22 +59,24 @@ int main() {
                                                 std::cout << '\n';
                                                 while ( ( field = mysql_fetch_field( result ) ) ) {
 
-                                                    std::cout << std::left << std::setw( 30 )
-                                                              << field->name;
+                                                    // std::cout << std::left << std::setw( 30 )
+                                                    //           << field->name;
                                                 }
-                                                std::cout << '\n';
-                                                std::cout << std::setw( 120 ) << std::setfill( '-' )
-                                                          << '-' << '\n'
-                                                          << std::setfill( ' ' );
+                                                // std::cout << '\n';
+                                                // std::cout << std::setw( 120 ) <<
+                                                // std::setfill( '-' )
+                                                //           << '-' << '\n'
+                                                //           << std::setfill( ' ' );
                                             }
 
                                             while ( !mysql_stmt_fetch( stmt ) ) {
-                                                std::for_each(
-                                                    responseBinds.fields.begin(),
-                                                    responseBinds.fields.end(),
-                                                    []( auto* ptr ) { ptr->printValue(); } );
-                                                puts( "" );
+                                                // std::for_each(
+                                                //     responseBinds.fields.begin(),
+                                                //     responseBinds.fields.end(),
+                                                //     []( auto* ptr ) { ptr->printValue(); } );
+                                                // puts( "" );
                                             }
+                                            responseBinds.displayFields();
 
                                             mysql_free_result( result );
                                         }
@@ -134,7 +141,7 @@ int main() {
 
     mysql_close( db_conn );
     mysql_library_end();
-    // createDBTableBinds( HOST, USER, PASSWORD, DATABASE );
+    // createDBTableBinds( HOST, USER, PASSWORD, DATABASE, 100 );
 
     return 0;
 }

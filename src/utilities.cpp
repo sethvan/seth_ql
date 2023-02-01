@@ -1,9 +1,7 @@
 #include "utilities.h"
 
 #include <algorithm>
-#include <array>
 #include <initializer_list>
-#include <string_view>
 
 static const std::array<std::string_view, 256> getFieldTypesArray() {
     std::array<std::string_view, 256> fieldTypes{
@@ -47,7 +45,7 @@ const std::array<std::string_view, 256> fieldTypes = getFieldTypesArray();
 
 // Below are NOT all the enum_field_types for such data but just the permitted buffer types for use
 // in prepared statements
-bool isCharArray( enum_field_types type ) {  // The only char[] buffer types permitted in Response
+bool isCharArray( enum_field_types type ) {  // The only char[] buffer types permitted in Output
     int enumValue = static_cast<int>( type );
     return ( ( enumValue > 248 && enumValue < 255 ) || enumValue == 246 );
 }

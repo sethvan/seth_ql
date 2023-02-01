@@ -3,20 +3,19 @@
 
 #include "binds.hpp"
 
+Binds<InputCType> branch_request_binds();
+Binds<OutputCType> branch_response_binds();
 
-Binds<RequestCType> branch_request_bind();
-Binds<ResponseCType> branch_response_bind();
+Binds<InputCType> branch_supplier_request_binds();
+Binds<OutputCType> branch_supplier_response_binds();
 
-Binds<RequestCType> branch_supplier_request_bind();
-Binds<ResponseCType> branch_supplier_response_bind();
+Binds<InputCType> client_request_binds();
+Binds<OutputCType> client_response_binds();
 
-Binds<RequestCType> client_request_bind();
-Binds<ResponseCType> client_response_bind();
+Binds<InputCType> employee_request_binds();
+Binds<OutputCType> employee_response_binds();
 
-Binds<RequestCType> employee_request_bind();
-Binds<ResponseCType> employee_response_bind();
+Binds<InputCType> works_with_request_binds();
+Binds<OutputCType> works_with_response_binds();
 
-Binds<RequestCType> works_with_request_bind();
-Binds<ResponseCType> works_with_response_bind();
-
-#endif //INCLUDED_GIRAFFEBINDS_H
+#endif  // INCLUDED_GIRAFFEBINDS_H
