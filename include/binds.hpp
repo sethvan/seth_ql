@@ -36,13 +36,13 @@ class Binds {
     Binds( std::vector<std::unique_ptr<T>> _columns );  // To set once the correct order of
                                                         // MYSQL_BINDs for the prepared statement.
 
-    void displayFields();
+    void displayFields() const;
     void setBinds(
         const std::optional<std::initializer_list<bool>>& selectedColumns = std::nullopt );
     MYSQL_BIND* getBinds() {
         return selection.data();
     }
-    size_t getBindsSize() {  // for testing during development
+    size_t getBindsSize() const {  // for testing during development
         return selection.size();
     }
 };
@@ -56,7 +56,7 @@ Binds<T>::Binds( std::vector<std::unique_ptr<T>> _columns ) : columns( std::move
 }
 
 template <typename T>
-void Binds<T>::displayFields() {
+void Binds<T>::displayFields() const {
     puts( "" );
     std::cout << std::left << std::setw( 30 ) << "Field Name";
     std::cout << std::left << std::setw( 30 ) << "Field Type";
@@ -86,7 +86,7 @@ void Binds<T>::setBinds( const std::optional<std::initializer_list<bool>>& selec
         std::for_each( sc.begin(), sc.end(),
                        [&]( const bool b ) { columns[i++]->is_selected = b; } );
     }
-    selection.erase( selection.begin(), selection.end() );
+    selection.erase( selection.begin(), selection.end() );  // in case a previous selection was made
 
     std::for_each( columns.begin(), columns.end(), [&]( auto& o ) {
         if ( o->is_selected ) {

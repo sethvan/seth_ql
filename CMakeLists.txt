@@ -4,6 +4,9 @@ project( typestest LANGUAGES "CXX" )
 
 add_executable( typestest 
 src/utilities.cpp
+src/getDBTables.cpp
+src/createDBTableBinds.cpp
+src/mybank_binds.cpp
 src/main.cpp )
 
 target_include_directories( typestest PRIVATE include )

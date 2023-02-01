@@ -5,9 +5,11 @@
 #include <iostream>
 
 #include "binds.hpp"
+#include "createDBTableBinds.h"
+#include "getDBTables.h"
+#include "mybank_binds.h"
 #include "myvars.h"
 #include "sqlTypes.hpp"
-#include "utilities.h"
 
 int main() {
 
@@ -15,7 +17,7 @@ int main() {
     int count = 0;
     MYSQL* db_conn;
     MYSQL_STMT* stmt;
-    std::string_view getRow( "SELECT * FROM bank_account WHERE lname=? AND acc_no > ?" );
+    std::string_view getRow( "SELECT * FROM bank_account WHERE acc_no=?" );
 
     if ( !mysql_library_init( 0, nullptr, nullptr ) ) {
 
@@ -27,28 +29,17 @@ int main() {
 
                     if ( !mysql_stmt_prepare( stmt, getRow.data(), getRow.length() ) ) {
 
-                        Binds<RequestCType> requestBinds( make_vector<RequestCType>(
-                            std::make_unique<TypeCharArrayRequest>( "lname", MYSQL_TYPE_STRING,
-                                                                    100 ),
-                            std::make_unique<TypeIntRequest>( "acc_no" ) ) );
-                        requestBinds.setBinds();
+                        auto requestBinds = bank_account_request_bind();
+                        requestBinds.setBinds(
+                            std::initializer_list<bool>{ true, false, false, false } );
 
                         if ( !mysql_stmt_bind_param( stmt, requestBinds.getBinds() ) ) {
 
-                            Binds<ResponseCType> responseBinds( make_vector<ResponseCType>(
-                                std::make_unique<TypeIntResponse>( "acc_no" ),
-                                std::make_unique<TypeCharArrayResponse>(
-                                    "fname", MYSQL_TYPE_VAR_STRING, 100 ),
-                                std::make_unique<TypeCharArrayResponse>(
-                                    "lname", MYSQL_TYPE_VAR_STRING, 100 ),
-                                std::make_unique<TypeCharArrayResponse>(
-                                    "balance", MYSQL_TYPE_NEWDECIMAL, 100 ) ) );
+                            auto responseBinds = bank_account_response_bind();
                             responseBinds.setBinds();
 
-                            for ( int i = 100; i < 102; ++i ) {
-                                requestBinds.fields[0]->set_value( "Hankins" );
-                                requestBinds.fields[1]->set_value( i );
-                                count = 0;
+                            for ( int i = 100; i < 109; ++i ) {
+                                requestBinds.fields[0]->set_value( i );
 
                                 if ( !mysql_stmt_execute( stmt ) ) {
 
@@ -81,7 +72,6 @@ int main() {
                                             }
 
                                             mysql_free_result( result );
-                                            puts( "" );
                                         }
                                     }
                                     else {
@@ -144,6 +134,7 @@ int main() {
 
     mysql_close( db_conn );
     mysql_library_end();
+    // createDBTableBinds( HOST, USER, PASSWORD, DATABASE );
 
-    return retval;
+    return 0;
 }
