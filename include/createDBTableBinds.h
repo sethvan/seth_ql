@@ -7,9 +7,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 
-void createDBTableBinds( const char* HOST, const char* USER, const char* PASSWORD,
-                         const char* DATABASE,
+void createDBTableBinds( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE,
                          unsigned long buff_size );  // buff_size will be the buff size for all the
                                                      // binds created that are char[]
 

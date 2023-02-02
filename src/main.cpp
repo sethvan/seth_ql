@@ -14,12 +14,13 @@
 
 int main() {
 
+    // createDBTableBinds( HOST, USER, PASSWORD, DATABASE, 100 );
+
     int retval = 0;
     int count = 0;
     MYSQL* db_conn;
     MYSQL_STMT* stmt;
-    std::string_view getRow(
-        "SELECT * FROM table_lock_waits_summary_by_table WHERE AVG_TIMER_WAIT=?" );
+    std::string_view getRow( "select * from events_statements_current where thread_id=?" );
 
     if ( !mysql_library_init( 0, nullptr, nullptr ) ) {
 
@@ -32,24 +33,20 @@ int main() {
                     if ( !mysql_stmt_prepare( stmt, getRow.data(), getRow.length() ) ) {
 
                         Binds<InputCType> requestBinds( make_vector<InputCType>(
-                            std::make_unique<
-                                TypeInputImpl<unsigned long long, MYSQL_TYPE_LONGLONG>>(
-                                "AVG_TIMER_WAIT" ) ) );
+                            std::make_unique<TypeInputImpl<unsigned long long, MYSQL_TYPE_LONGLONG>>( "THREAD_ID" ) ) );
                         requestBinds.setBinds();
 
                         if ( !mysql_stmt_bind_param( stmt, requestBinds.getBinds() ) ) {
 
-                            auto responseBinds = table_lock_waits_summary_by_tableOutputBinds();
+                            auto responseBinds = events_statements_currentOutputBinds();
                             responseBinds.setBinds();
 
                             for ( int i = 100; i < 101; ++i ) {
-                                requestBinds.fields[0]->set_value(
-                                    static_cast<unsigned long long>( 2499222 ) );
+                                requestBinds.fields[0]->set_value( static_cast<unsigned long long>( 56 ) );
 
                                 if ( !mysql_stmt_execute( stmt ) ) {
 
-                                    if ( !mysql_stmt_bind_result( stmt,
-                                                                  responseBinds.getBinds() ) ) {
+                                    if ( !mysql_stmt_bind_result( stmt, responseBinds.getBinds() ) ) {
 
                                         MYSQL_RES* result;
                                         if ( ( result = mysql_stmt_result_metadata( stmt ) ) ) {
@@ -70,6 +67,7 @@ int main() {
                                             }
 
                                             while ( !mysql_stmt_fetch( stmt ) ) {
+                                                printf( "Inside fetch!\n" );
                                                 // std::for_each(
                                                 //     responseBinds.fields.begin(),
                                                 //     responseBinds.fields.end(),
@@ -128,8 +126,6 @@ int main() {
     }
     std::cout << '\n';
 
-    // Clean up and close the connection
-
     if ( retval != 1 ) {
         if ( mysql_stmt_close( stmt ) ) {
             /* mysql_stmt_close() invalidates stmt, so call          */
@@ -141,7 +137,6 @@ int main() {
 
     mysql_close( db_conn );
     mysql_library_end();
-    // createDBTableBinds( HOST, USER, PASSWORD, DATABASE, 100 );
 
     return 0;
 }

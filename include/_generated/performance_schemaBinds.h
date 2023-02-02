@@ -3,6 +3,7 @@
 
 #include "binds.hpp"
 
+
 Binds<InputCType> accountsInputBinds();
 Binds<OutputCType> accountsOutputBinds();
 
@@ -336,4 +337,4 @@ Binds<OutputCType> variables_by_threadOutputBinds();
 Binds<InputCType> variables_infoInputBinds();
 Binds<OutputCType> variables_infoOutputBinds();
 
-#endif  // INCLUDED_PERFORMANCE_SCHEMABINDS_H
+#endif //INCLUDED_PERFORMANCE_SCHEMABINDS_H

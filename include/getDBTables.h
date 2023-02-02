@@ -3,6 +3,7 @@
 #include <mysql/mysql.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 struct Field {
@@ -17,10 +18,8 @@ struct Table {
     std::vector<Field> fields;
 };
 
-std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* PASSWORD,
-                                const char* DATABASE );
-void printDBTables( const char* HOST, const char* USER, const char* PASSWORD,
-                    const char* DATABASE );
+std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE );
+void printDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE );
 void printDBTables( const std::vector<Table>& tables );
 
 #endif  // INCLUDED_GETTABLES_H

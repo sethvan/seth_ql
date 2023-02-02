@@ -1,9 +1,7 @@
 #include "getDBTables.h"
 
 #include <algorithm>
-#include <array>
 #include <cstring>
-#include <initializer_list>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -11,8 +9,12 @@
 
 #include "utilities.h"
 
-std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* PASSWORD,
-                                const char* DATABASE ) {
+struct InputtedType {
+    std::string fieldName;
+    std::string type;
+};
+
+std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE ) {
 
     std::vector<Table> tables;
 
@@ -50,7 +52,7 @@ std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* 
         MYSQL_ROW row = mysql_fetch_row( res );
         std::next( tables.end(), -1 )->name = row[0];
 
-        // Get the fields and field types of the current table
+        // Get the fields and internal field types of the current table
         MYSQL_RES* fields = mysql_list_fields( db_conn, row[0], nullptr );
         if ( fields == nullptr ) {
             std::cerr << "Error: " << mysql_error( db_conn ) << std::endl;
@@ -62,9 +64,11 @@ std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* 
         }
 
         std::stringstream ss;
+        // To get the initial data type externally given by user which we use to retrieve the Binds' builder command for
+        // it's field from the typeCreationStrings TurnerMap
         ss << "SELECT column_name, data_type FROM information_schema.columns "
-              "WHERE table_name = "
-           << std::quoted( std::next( tables.end(), -1 )->name, '\'' );
+              "WHERE table_name = \'"
+           << row[0] << "\'";
         std::string query = ss.str();
 
         if ( mysql_query( db_conn, query.c_str() ) ) {
@@ -86,42 +90,46 @@ std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* 
             exit( 1 );
         }
 
-        // "Fields in table "
+        MYSQL_ROW dataTypeRow;
+        std::vector<InputtedType> inTypes;
+        // Results obtained in different loops because output sequence of the 2 fetch function results do not always
+        // match. Instead must use std::find_if() with these results in the loop after this one.
+        while ( ( dataTypeRow = mysql_fetch_row( userInputtedData ) ) ) {
+            inTypes.emplace_back( dataTypeRow[0], dataTypeRow[1] );
+        }
+
         for ( unsigned int j = 0; j < mysql_num_fields( fields ); j++ ) {
             MYSQL_FIELD* field = mysql_fetch_field_direct( fields, j );
-            MYSQL_ROW dataTypeRow = mysql_fetch_row( userInputtedData );
+            auto it = std::find_if( inTypes.begin(), inTypes.end(),
+                                    [&]( const auto& s ) { return s.fieldName == field->name; } );
 
-            std::next( tables.end(), -1 )
-                ->fields.emplace_back( field->name, field->type, field->flags, dataTypeRow[1] );
+            std::next( tables.end(), -1 )->fields.emplace_back( field->name, field->type, field->flags, it->type );
         }
 
         mysql_free_result( fields );
         mysql_free_result( userInputtedData );
     }
 
-    // Clean up and close the connection
     mysql_free_result( res );
     mysql_close( db_conn );
     mysql_library_end();
     return tables;
 }
 
-void printDBTables( const char* HOST, const char* USER, const char* PASSWORD,
-                    const char* DATABASE ) {
+void printDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE ) {
     std::vector<Table> tables = getDBTables( HOST, USER, PASSWORD, DATABASE );
     std::for_each( tables.begin(), tables.end(), [&]( const auto& table ) {
         std::cout << "\n\nTable: " << table.name << '\n';
         puts( "" );
-        std::cout << std::left << std::setw( 30 ) << "Field Name";
+        std::cout << std::left << std::setw( 55 ) << "Field Name";
         std::cout << std::left << std::setw( 30 ) << "Internal Field Type";
         std::cout << std::left << std::setw( 30 ) << "External Field Type";
         std::cout << std::left << std::setw( 30 ) << "Unsigned" << '\n';
-        std::cout << std::left << std::setw( 100 ) << std::setfill( '-' ) << '-'
-                  << std::setfill( ' ' ) << '\n';
+        std::cout << std::left << std::setw( 125 ) << std::setfill( '-' ) << '-' << std::setfill( ' ' ) << '\n';
 
         puts( "" );
         std::for_each( table.fields.begin(), table.fields.end(), [&]( const auto& field ) {
-            std::cout << std::left << std::setw( 30 ) << field.name;
+            std::cout << std::left << std::setw( 55 ) << field.name;
             std::cout << std::left << std::setw( 30 ) << fieldTypes[field.type];
             std::cout << std::left << std::setw( 30 ) << field.externalType;
             std::cout << std::boolalpha << std::left << std::setw( 10 )
@@ -137,16 +145,15 @@ void printDBTables( const std::vector<Table>& tables ) {
     std::for_each( tables.begin(), tables.end(), [&]( const auto& table ) {
         std::cout << "\n\nTable: " << table.name << '\n';
         puts( "" );
-        std::cout << std::left << std::setw( 30 ) << "Field Name";
+        std::cout << std::left << std::setw( 55 ) << "Field Name";
         std::cout << std::left << std::setw( 30 ) << "Internal Field Type";
         std::cout << std::left << std::setw( 30 ) << "External Field Type";
         std::cout << std::left << std::setw( 30 ) << "Unsigned" << '\n';
-        std::cout << std::left << std::setw( 100 ) << std::setfill( '-' ) << '-'
-                  << std::setfill( ' ' ) << '\n';
+        std::cout << std::left << std::setw( 125 ) << std::setfill( '-' ) << '-' << std::setfill( ' ' ) << '\n';
 
         puts( "" );
         std::for_each( table.fields.begin(), table.fields.end(), [&]( const auto& field ) {
-            std::cout << std::left << std::setw( 30 ) << field.name;
+            std::cout << std::left << std::setw( 55 ) << field.name;
             std::cout << std::left << std::setw( 30 ) << fieldTypes[field.type];
             std::cout << std::left << std::setw( 30 ) << field.externalType;
             std::cout << std::boolalpha << std::left << std::setw( 10 )
