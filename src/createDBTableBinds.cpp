@@ -1,12 +1,10 @@
 /*
-    The createDBTableBinds()'s purpose is to create functions that build binds objects from binds.hpp which represent
-   MYSQL tables to be used in the C API's prepared statements. Creating a prepared statement does not always necessitate
-   that it's associated MYSQL_BIND array contain an element for every field in a table but a binds object is able to do
-   so and yet only select certain fields within them for it's corresponding MYSQL_BIND array. Therefore in case anyone
-   wants to automatically create a binds object that by default contains elements for all the fields in a table
-   without creating it manually, this function gets the data for all the tables in a specified database and writes
-   separate binds object builder functions for each of them to source code files. The function declarations to a .h/.hpp
-   file and their definitions to a .cpp file using the paths that are specified in the function arguments.
+    The createDBTableBinds()'s function gets the data for all the tables in a specified database and
+    writes separate binds (from binds.hpp) object builder functions for each of them to source code
+    files.
+
+    The function declarations to a .h/.hpp file and their definitions to a .cpp file using
+    the paths that are specified in the function arguments.
 
 */
 
