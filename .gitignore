@@ -9,4 +9,4 @@ createclass
 run
 myvars.h
 build
-
+/res/clipboard.cpp

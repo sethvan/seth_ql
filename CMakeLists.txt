@@ -6,8 +6,8 @@ add_executable( typestest
 src/utilities.cpp
 src/getDBTables.cpp
 src/createDBTableBinds.cpp
-src/_generated/mybankBinds.cpp
-src/_generated/performance_schemaBinds.cpp
+#src/_generated/mybankBinds.cpp
+#src/_generated/performance_schemaBinds.cpp
 src/main.cpp )
 
 target_include_directories( typestest PRIVATE include )

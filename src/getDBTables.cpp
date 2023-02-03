@@ -14,7 +14,8 @@ struct InputtedType {
     std::string type;
 };
 
-std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE ) {
+std::vector<Table> getDBTables( std::string_view host, std::string_view user, std::string_view password,
+                                std::string_view database ) {
 
     std::vector<Table> tables;
 
@@ -30,7 +31,8 @@ std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* 
         exit( 1 );
     }
 
-    if ( mysql_real_connect( db_conn, HOST, USER, PASSWORD, DATABASE, 0, nullptr, 0 ) == nullptr ) {
+    if ( mysql_real_connect( db_conn, host.data(), user.data(), password.data(), database.data(), 0, nullptr, 0 ) ==
+         nullptr ) {
         std::cerr << "Error: " << mysql_error( db_conn ) << '\n';
         mysql_close( db_conn );
         mysql_library_end();
@@ -116,8 +118,9 @@ std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* 
     return tables;
 }
 
-void printDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE ) {
-    std::vector<Table> tables = getDBTables( HOST, USER, PASSWORD, DATABASE );
+void printDBTables( std::string_view host, std::string_view user, std::string_view password,
+                    std::string_view database ) {
+    std::vector<Table> tables = getDBTables( host, user, password, database );
     std::for_each( tables.begin(), tables.end(), [&]( const auto& table ) {
         std::cout << "\n\nTable: " << table.name << '\n';
         puts( "" );

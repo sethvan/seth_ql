@@ -18,8 +18,10 @@ struct Table {
     std::vector<Field> fields;
 };
 
-std::vector<Table> getDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE );
-void printDBTables( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE );
+std::vector<Table> getDBTables( std::string_view host, std::string_view user, std::string_view password,
+                                std::string_view database );
+void printDBTables( std::string_view host, std::string_view user, std::string_view password,
+                    std::string_view database );
 void printDBTables( const std::vector<Table>& tables );
 
 #endif  // INCLUDED_GETTABLES_H

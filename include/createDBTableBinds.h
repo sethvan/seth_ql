@@ -9,7 +9,9 @@
 #include <string>
 #include <string_view>
 
-void createDBTableBinds( const char* HOST, const char* USER, const char* PASSWORD, const char* DATABASE,
+void createDBTableBinds( std::string_view host, std::string_view user, std::string_view password,
+                         std::string_view database, std::string_view declFile, std::string_view defnFile,
+                         std::string_view includeStr,
                          unsigned long buff_size );  // buff_size will be the buff size for all the
                                                      // binds created that are char[]
 
