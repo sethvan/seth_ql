@@ -12,7 +12,7 @@
 #include "myvars.h"
 #include "sqlTypes.hpp"
 
-using namespace binds_wrapper;
+using namespace set_mysql_binds;
 
 int main() {
 
