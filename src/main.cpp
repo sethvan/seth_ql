@@ -12,6 +12,8 @@
 #include "myvars.h"
 #include "sqlTypes.hpp"
 
+using namespace binds_wrapper;
+
 int main() {
 
     createDBTableBinds( HOST, USER, PASSWORD, "performance_schema", "include/_generated/performance_schemaBinds.h",
