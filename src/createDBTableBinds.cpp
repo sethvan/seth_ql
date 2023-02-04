@@ -102,14 +102,12 @@ namespace binds_wrapper {
                                       const std::ostringstream& declaration_footer, const std::string& fileName ) {
         std::ofstream hFile( fileName );
         hFile << declaration_header.str() << declaration_body.str() << declaration_footer.str();
-        hFile.close();
     }
 
     static void writeDefinitionFile( const std::ostringstream& definition_header,
                                      const std::ostringstream& definition_body, const std::string& fileName ) {
         std::ofstream cppFile( fileName );
         cppFile << definition_header.str() << definition_body.str();
-        cppFile.close();
     }
 
     // In this function the term 'header' is used in the HTML sense as being the top of a page, declaration_header
