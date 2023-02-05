@@ -19,7 +19,7 @@ include(FetchContent)
 FetchContent_Declare(
     set_mysql_binds
     GIT_REPOSITORY https://github.com/sethvan/set_mysql_binds
-    GIT_TAG HEAD
+    GIT_TAG master
     GIT_SHALLOW true
 )
 FetchContent_GetProperties(set_mysql_binds)

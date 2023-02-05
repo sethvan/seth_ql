@@ -4,13 +4,8 @@
 #include <initializer_list>
 #include <iostream>
 
-// #include "_generated/mybankBinds.h"
-// #include "_generated/performance_schemaBinds.h"
-#include "binds.hpp"
-#include "createDBTableBinds.h"
-#include "getDBTables.h"
 #include "myvars.h"
-#include "sqlTypes.hpp"
+#include "set_mysql_binds.h"
 
 using namespace set_mysql_binds;
 
