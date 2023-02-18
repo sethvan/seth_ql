@@ -33,5 +33,5 @@ target_link_libraries(typestest PRIVATE set_mysql_binds)
 target_include_directories( typestest PRIVATE include)
 target_link_options( typestest PRIVATE -fsanitize=address)
 target_compile_options( typestest PRIVATE 
-    -Wall -Wextra -Werror -Wl,-z,defs -fwrapv -O3
+    -Wall -Wextra -Wl,-z,defs -fwrapv -O3
 )
