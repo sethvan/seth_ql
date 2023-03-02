@@ -10,3 +10,5 @@ run
 myvars.h
 build
 /res/clipboard.cpp
+.gitignore
+sql_study

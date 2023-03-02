@@ -1,28 +1,36 @@
 #include <mysql/mysql.h>
 
 #include <iostream>
+#include <string>
+#include <string_view>
 
+#include "_generated/giraffeBinds.h"
+#include "myVars.h"
 #include "set_mysql_binds.h"
 
 using namespace set_mysql_binds;
 using enum set_mysql_binds::MysqlInputType;
 
 int main() {
+   //    createDBTableBinds(
+   //        HOST, USER, PASSWORD, DATABASE, "include/_generated/performance_schemaBinds.h",
+   //        "src/_generated/performance_schemaBinds.cpp", "_generated/performance_schemaBinds.h",
+   //        100 );
 
-    std::string salary( "salary" );
-    std::string_view flags( "flags" );
+   // printDBTables( HOST, USER, PASSWORD, DATABASE );
 
-    auto table = makeInputBindsArray( Bind<VARCHAR>( "name", 100 ), Bind<INT>( "id" ), Bind<TINYINT>( "age" ),
-                                      Bind<VARCHAR>( "location", 100 ), Bind<DECIMAL>( salary ),
-                                      Bind<BOOLEAN>( "married" ), Bind<BINARY>( flags, 100 ) );
-    table["name"]->set_value( "John Wayne" );
-    table["id"]->isNull = true;
-    table["age"]->set_value( 32 );
-    table["married"]->set_value( false );
-    table["location"]->set_value( "Brownsville, TX" );
-    table[salary]->set_value( 678.93 );
-    table[flags]->set_value( "0b10100010" );
+   auto branch = branchInputBindsArray();
+   branch[ "branch_id" ]->set_value( 12 );
+   branch[ "branch_name" ]->set_value( "Hayward" );
+   branch[ "mgr_id" ]->set_value( 342 );
+   auto& strtDate = branch[ "mgr_start_date" ]->Value<DATE>();
+   strtDate.year = 2002;
+   strtDate.month = 6;
+   strtDate.day = 17;
+   strtDate.hour = 3;
+   strtDate.minute = 33;
+   strtDate.second = 9;
+   branch.displayFields();
 
-    table.displayFields();
-    return 0;
+   return 0;
 }
