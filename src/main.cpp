@@ -138,55 +138,59 @@ int main() {
       MySQLSession::init();
       auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
       Statement stmt1( db_conn, "SELECT * FROM client WHERE branch_id=?" );
-      auto input = makeInputBindsArray( Bind<INT>( "branch_id" ) );
-
-      stmt1.bind_param( input.getBinds() );
-
-      auto output = clientOutputBindsArray();
+      auto whereInput = makeInputBindsArray( Bind<INT>( "branch_id" ) );
+      stmt1.bind_param( whereInput.getBinds() );
+      auto clientOut = clientOutputBindsArray();
 
       int count = 0;
       for ( int i = 2; i < 4; ++i ) {
-         input[ "branch_id" ]->set_value( i );
+         whereInput[ "branch_id" ] = i;
          stmt1.execute();
-         stmt1.bind_result( output.getBinds() );
+         stmt1.bind_result( clientOut.getBinds() );
 
-         displayResult( stmt1, output, count++ );
+         displayResult( stmt1, clientOut, count++ );
       }
       puts( "" );
 
       Statement stmt2( db_conn, "INSERT into client values(?,?,?)" );
-      auto clientInput = clientInputBindsArray();
-      stmt2.bind_param( clientInput.getBinds() );
+      auto clientIn = clientInputBindsArray();
+      stmt2.bind_param( clientIn.getBinds() );
 
-      clientInput[ "client_id" ]->set_value( 407 );
-      clientInput[ "client_name" ]->set_value( "Chicago Tribune" );
-      clientInput[ "branch_id" ]->set_value( 3 );
+      std::string_view sv = "Chicago Tribune";
+
+      clientIn[ "client_id" ] = 407;
+      clientIn[ "client_name" ] = sv;
+      clientIn[ "branch_id" ] = 3;
       stmt2.execute();
 
-      clientInput.fields[ 0 ]->set_value( 408 );
-      clientInput.fields[ 1 ]->set_value( "FDA" );
-      clientInput.fields[ 2 ]->set_value( 2 );
+      char arr[ 20 ] = { 'F', 'D', 'A', '\0' };
+
+      clientIn[ 0 ] = 408;
+      clientIn[ 1 ] = arr;
+      clientIn[ 2 ] = 2;
       stmt2.execute();
 
-      auto it = clientInput.fields.begin();
-      ( *it )->set_value( 409 );
-      ( *++it )->set_value( "Global Gas" );
-      ( *++it )->set_value( 3 );
+      auto it = clientIn.fields.begin();
+      **it = 409;
+      **++it = "Global Gas";
+      **++it = 3;
       stmt2.execute();
+
+      Statement stmt3( db_conn, "SELECT * FROM client WHERE client_id=?" );
+      whereInput = makeInputBindsArray( Bind<INT>( "client_id" ) );
+      stmt3.bind_param( whereInput.getBinds() );
 
       count = 0;
-      for ( int i = 2; i < 4; ++i ) {
-         input[ "branch_id" ]->set_value( i );
-         stmt1.execute();
-         stmt1.bind_result( output.getBinds() );
+      for ( int i = 400; i < 411; ++i ) {
+         whereInput[ "client_id" ] = i;
+         stmt3.execute();
+         stmt3.bind_result( clientOut.getBinds() );
 
-         displayResult( stmt1, output, count++ );
+         displayResult( stmt3, clientOut, count++ );
       }
       puts( "" );
 
    } catch ( std::runtime_error& e ) { std::cerr << e.what(); }
-
-   printf( "End!\n" );
 
    return 0;
 }
