@@ -1,14 +1,8 @@
-**/CMakeFiles
-**/Makefile
-**/build/CMakeCache.txt
-**/build/cmake_install.cmake
-**/typestest
-typestest
 .vscode
 createclass
-run
-myvars.h
+*myVars.h
+tester_main/myVars.h
 build
 /res/clipboard.cpp
 .gitignore
-sql_study
+tester

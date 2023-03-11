@@ -3,10 +3,9 @@
 #define INCLUDED_PERFORMANCE_SCHEMABINDS_H
 
 #include "BindsArray.hpp"
+#include "makeBinds.hpp"
 
-
-using namespace set_mysql_binds;
-
+using namespace seth_ql;
 
 BindsArray<InputCType> accountsInputBindsArray();
 BindsArray<OutputCType> accountsOutputBindsArray();
@@ -248,5 +247,4 @@ BindsArray<OutputCType> user_variables_by_threadOutputBindsArray();
 BindsArray<InputCType> usersInputBindsArray();
 BindsArray<OutputCType> usersOutputBindsArray();
 
-
-#endif //INCLUDED_PERFORMANCE_SCHEMABINDS_H
+#endif  // INCLUDED_PERFORMANCE_SCHEMABINDS_H

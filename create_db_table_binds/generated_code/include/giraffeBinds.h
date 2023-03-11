@@ -5,10 +5,7 @@
 #include "BindsArray.hpp"
 #include "makeBinds.hpp"
 
-
-
-using namespace set_mysql_binds;
-
+using namespace seth_ql;
 
 BindsArray<InputCType> branchInputBindsArray();
 BindsArray<OutputCType> branchOutputBindsArray();
@@ -25,5 +22,4 @@ BindsArray<OutputCType> employeeOutputBindsArray();
 BindsArray<InputCType> works_withInputBindsArray();
 BindsArray<OutputCType> works_withOutputBindsArray();
 
-
-#endif //INCLUDED_GIRRAFEBINDS_H
+#endif  // INCLUDED_GIRRAFEBINDS_H

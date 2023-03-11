@@ -4,11 +4,11 @@
 #include <string>
 #include <string_view>
 
-#include "_generated/giraffeBinds.h"
+#include "giraffeBinds.h"
+#include "makeBinds.hpp"
 #include "myVars.h"
-#include "set_mysql_binds.h"
 
-namespace set_mysql_binds {
+namespace seth_ql {
 
 void failOut( const char* functionName, const char* errMsg ) {
    throw std::runtime_error( std::string( functionName ) + " failed\n" + errMsg + "\n" );
@@ -128,14 +128,14 @@ void displayResult( MYSQL_STMT* stmt, const BindsArray<OutputCType>& output, int
    }
 }
 
-}  // namespace set_mysql_binds
+}  // namespace seth_ql
 
-using namespace set_mysql_binds;
-using enum set_mysql_binds::MysqlInputType;
+using namespace seth_ql;
+using enum seth_ql::MysqlInputType;
 
 int main() {
    try {
-      MySQLSession::init();
+      MySQLSession::init();  // singleton
       auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
       Statement stmt1( db_conn, "SELECT * FROM client WHERE branch_id=?" );
       auto whereInput = makeInputBindsArray( Bind<INT>( "branch_id" ) );
@@ -156,24 +156,24 @@ int main() {
       auto clientIn = clientInputBindsArray();
       stmt2.bind_param( clientIn.getBinds() );
 
-      std::string_view sv = "Chicago Tribune";
+      std::string str = "Chicago Tribune";
 
-      clientIn[ "client_id" ] = 407;
-      clientIn[ "client_name" ] = sv;
-      clientIn[ "branch_id" ] = 3;
+      clientIn[ "client_id" ] = "407";
+      clientIn[ "client_name" ] = str;
+      clientIn[ "branch_id" ] = "3";
       stmt2.execute();
 
       char arr[ 20 ] = { 'F', 'D', 'A', '\0' };
 
-      clientIn[ 0 ] = 408;
+      clientIn[ 0 ] = "408";
       clientIn[ 1 ] = arr;
-      clientIn[ 2 ] = 2;
+      clientIn[ 2 ] = "2";
       stmt2.execute();
 
       auto it = clientIn.fields.begin();
-      **it = 409;
+      **it = "409";
       **++it = "Global Gas";
-      **++it = 3;
+      **++it = "3";
       stmt2.execute();
 
       Statement stmt3( db_conn, "SELECT * FROM client WHERE client_id=?" );
@@ -181,7 +181,7 @@ int main() {
       stmt3.bind_param( whereInput.getBinds() );
 
       count = 0;
-      for ( int i = 400; i < 411; ++i ) {
+      for ( int i = 400; i < 410; ++i ) {
          whereInput[ "client_id" ] = i;
          stmt3.execute();
          stmt3.bind_result( clientOut.getBinds() );
