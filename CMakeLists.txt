@@ -15,7 +15,7 @@ endif()
 add_subdirectory(binds_array_wrapper)
 add_subdirectory(create_db_table_binds)
 add_subdirectory(misc)
-#add_subdirectory(other_mysql_wrappers)
+add_subdirectory(other_mysql_wrappers)
 add_subdirectory(tester_main)
 
 target_compile_features( tester PRIVATE cxx_std_20)

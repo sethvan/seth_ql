@@ -6,5 +6,6 @@ binds_array_wrapper
 create_db_table_binds
 generated_code
 misc
+other_mysql_wrappers
 ${MYSQLCLIENT_LIBRARY}
 )
