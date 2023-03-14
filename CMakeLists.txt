@@ -14,12 +14,12 @@ endif()
 
 add_subdirectory(binds_array_wrapper)
 add_subdirectory(create_db_table_binds)
-add_subdirectory(misc)
 add_subdirectory(other_mysql_wrappers)
+add_subdirectory(misc)
 add_subdirectory(tester_main)
 
 target_compile_features( tester PRIVATE cxx_std_20)
 target_link_options( tester PRIVATE -fsanitize=address)
 target_compile_options( tester PRIVATE
-    -Wall -Wextra -Wconversion -Wl,-z,defs -fwrapv -O3 
+    -Wall -Wextra -pedantic -Wconversion -Wl,-z,defs -fwrapv -O3
 )
