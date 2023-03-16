@@ -1,28 +1,46 @@
 #include <mysql/mysql.h>
 
-#include <array>
 #include <iostream>
+#include <string>
+#include <string_view>
 
 #include "MySQLSession.h"
-#include "Query.h"
-#include "csv_parser.h"
+#include "Statement.h"
+#include "giraffeBinds.h"
+#include "makeBinds.hpp"
 #include "myVars.h"
 
 using namespace seth_ql;
+using enum seth_ql::Field;
 
 int main() {
    try {
       MySQLSession::init();
       auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
+      Statement stmt( db_conn, "INSERT into client values(?,?,?)" );
+      auto clientIn = makeInputBindsArray(
+          Bind<INT>( "client_id" ), Bind<VARCHAR>( "client_name", 100 ), Bind<INT>( "branch_id" ) );
+      stmt.bind_param( clientIn.getBinds() );
 
-      Query query( db_conn );
-      query.execute(
-          "create table Data7602(anzsic06 varchar(6) not null, Area varchar(10) not null,`year` "
-          "year not null, geo_count int not null, ec_count int not null, primary key(anzsic06, "
-          "Area))" );
+      std::string str = "Chicago Tribune";
+      clientIn[ "client_id" ] = 407;
+      clientIn[ "client_name" ] = str;
+      clientIn[ "branch_id" ] = 3;
+      stmt.execute();
 
-      std::array<bool, 5> quoted = { true, true, true, false, false };
-      insert_csv_to_table( db_conn, "Data7602", "res/Data7602DescendingYearOrder.csv", quoted );
+      char arr[ 20 ] = { 'F', 'D', 'A', '\0' };
+      clientIn[ 0 ] = "408";
+      clientIn[ 1 ] = arr;
+      clientIn[ 2 ] = "2";
+      stmt.execute();
+
+      auto it = clientIn.fields.begin();
+      **it = "409";
+      **++it = "Global Gas";
+      **++it = "3";
+      stmt.execute();
+
+      printf("Success\n");
 
    } catch ( std::runtime_error& e ) { std::cerr << e.what(); }
 

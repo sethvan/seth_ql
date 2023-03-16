@@ -8,7 +8,7 @@
 
 namespace seth_ql {
 
-   using enum MysqlInputType;
+   using enum Field;
 
    class InputCType : public SqlCType {
      public:
@@ -22,7 +22,7 @@ namespace seth_ql {
       virtual void operator=( std::span<const unsigned char> newValue ) = 0;
       virtual void operator=( const MYSQL_TIME& newValue ) = 0;
 
-      template <MysqlInputType type>
+      template <Field type>
       auto& Value() {
          return *static_cast<ValType<type>::type*>( buffer );
       }
