@@ -1,11 +1,18 @@
-// Class written by ChatGPT so as to not need C++20 for use of span
+// Class written by ChatGPT so as to not need C++20 for use cases of span in project
 
 #ifndef INCLUDED_SPAN_H
 #define INCLUDED_SPAN_H
 
 #include <cstddef>
+#include <type_traits>
 
 namespace seth_ql {
+
+   template <typename T, typename = std::void_t<>>
+   struct has_data_member : std::false_type {};
+
+   template <typename T>
+   struct has_data_member<T, std::void_t<decltype( std::declval<T>().data() )>> : std::true_type {};
 
    template <typename T, std::size_t Extent = std::size_t( -1 )>
    class Span {
@@ -16,7 +23,6 @@ namespace seth_ql {
       using pointer = T*;
       using reference = T&;
       using iterator = pointer;
-      using const_iterator = const pointer;
 
       constexpr Span() noexcept : data_( nullptr ), size_( 0 ) {}
       constexpr Span( pointer ptr, std::size_t count ) noexcept : data_( ptr ), size_( count ) {}
@@ -25,6 +31,33 @@ namespace seth_ql {
 
       template <typename U, std::size_t N>
       constexpr Span( Span<U, N> other ) noexcept : data_( other.data() ), size_( other.size() ) {}
+
+      template <typename Container, typename = std::enable_if_t<
+                                        has_data_member<Container>::value &&
+                                        !std::is_same_v<std::remove_cv_t<Container>, std::string>>>
+      Span( Container& container ) : data_( container.data() ), size_( container.size() ) {
+         static_assert(
+             std::is_same_v<std::remove_pointer_t<std::remove_cv_t<
+                                std::remove_reference_t<decltype( container.data() )>>>,
+                            T> ||
+                 std::is_convertible_v<
+                     std::remove_cv_t<std::remove_reference_t<decltype( container.data()[ 0 ] )>>,
+                     T>,
+             "Container element type must be compatible with Span element type." );
+      }
+      template <typename Container, typename = std::enable_if_t<
+                                        has_data_member<Container>::value &&
+                                        !std::is_same_v<std::remove_cv_t<Container>, std::string>>>
+      Span( const Container& container ) : data_( container.data() ), size_( container.size() ) {
+         static_assert(
+             std::is_same_v<std::remove_pointer_t<std::remove_cv_t<
+                                std::remove_reference_t<decltype( container.data() )>>>,
+                            T> ||
+                 std::is_convertible_v<
+                     std::remove_cv_t<std::remove_reference_t<decltype( container.data()[ 0 ] )>>,
+                     T>,
+             "Container element type must be compatible with Span element type." );
+      }
 
       constexpr pointer data() const noexcept { return data_; }
       constexpr std::size_t size() const noexcept { return size_; }
@@ -36,8 +69,8 @@ namespace seth_ql {
 
       constexpr iterator begin() const noexcept { return data_; }
       constexpr iterator end() const noexcept { return data_ + size_; }
-      constexpr const_iterator cbegin() const noexcept { return data_; }
-      constexpr const_iterator cend() const noexcept { return data_ + size_; }
+      constexpr iterator cbegin() const noexcept { return data_; }
+      constexpr iterator cend() const noexcept { return data_ + size_; }
 
      private:
       pointer data_;

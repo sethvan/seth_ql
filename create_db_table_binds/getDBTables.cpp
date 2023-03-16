@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Span.hpp"
 #include "utilities.h"
 
 namespace seth_ql {
@@ -117,7 +118,7 @@ namespace seth_ql {
       return tables;
    }
 
-   void printDBTables( const std::vector<Table>& tables ) {
+   void printDBTables( Span<const Table> tables ) {
       std::for_each( tables.begin(), tables.end(), [ & ]( const auto& table ) {
          std::cout << "\n\nTable: " << table.name << '\n';
          puts( "" );

@@ -1,13 +1,10 @@
 #include <mysql/mysql.h>
 
 #include <iostream>
-#include <string>
-#include <string_view>
 
 #include "MySQLSession.h"
-#include "Statement.h"
-#include "giraffeBinds.h"
-#include "makeBinds.hpp"
+
+#include "createDBTableBinds.h"
 #include "myVars.h"
 
 using namespace seth_ql;
@@ -15,29 +12,12 @@ using namespace seth_ql;
 int main() {
    try {
       MySQLSession::init();
-      auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
-      Statement stmt( db_conn, "INSERT into client values(?,?,?)" );
-      auto clientIn = makeInputBindsArray(
-          Bind<INT>( "client_id" ), Bind<VARCHAR>( "client_name", 100 ), Bind<INT>( "branch_id" ) );
-      stmt.bind_param( clientIn.getBinds() );
+      auto db_conn = createConnection( HOST, USER, PASSWORD, "girrafe" );
 
-      std::string str = "Chicago Tribune";
-      clientIn[ "client_id" ] = 407;
-      clientIn[ "client_name" ] = str;
-      clientIn[ "branch_id" ] = 3;
-      stmt.execute();
-
-      char arr[ 20 ] = { 'F', 'D', 'A', '\0' };
-      clientIn[ 0 ] = "408";
-      clientIn[ 1 ] = arr;
-      clientIn[ 2 ] = "2";
-      stmt.execute();
-
-      auto it = clientIn.fields.begin();
-      **it = "409";
-      **++it = "Global Gas";
-      **++it = "3";
-      stmt.execute();
+      createDBTableBinds( HOST, USER, PASSWORD, "girrafe",
+                          "create_db_table_binds/generated_code/include/girrafeBinds.h",
+                          "create_db_table_binds/generated_code/girrafeBinds.cpp", "girrafeBinds.h",
+                          100 );
 
       printf( "Success\n" );
 

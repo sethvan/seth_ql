@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "BindsArray.hpp"
 #include "SqlTypes/SqlTypes.h"
 
 namespace seth_ql {

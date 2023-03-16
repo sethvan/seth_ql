@@ -1,5 +1,5 @@
 add_library(generated_code 
-giraffeBinds.cpp 
+girrafeBinds.cpp 
 performance_schemaBinds.cpp 
 )
 

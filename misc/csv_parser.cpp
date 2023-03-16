@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Query.h"
+#include "Span.hpp"
 
 namespace seth_ql {
    std::vector<std::vector<std::string>> get_csv_rows( const std::string& csv_path ) {
@@ -94,7 +95,7 @@ namespace seth_ql {
    }
 
    void insert_csv_to_table( MYSQL* conn, const std::string& table_name,
-                             const std::string& csv_path, const std::vector<bool>& quoted ) {
+                             const std::string& csv_path, Span<const bool> quoted ) {
       auto rows = get_csv_rows( csv_path );
       std::ostringstream os;
 
