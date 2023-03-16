@@ -11,7 +11,6 @@
 #include "myVars.h"
 
 using namespace seth_ql;
-using enum seth_ql::Field;
 
 int main() {
    try {

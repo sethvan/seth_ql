@@ -2,7 +2,6 @@
 #include "performance_schemaBinds.h"
 
 using namespace seth_ql;
-using enum seth_ql::Field;
 
 BindsArray<InputCType> accountsInputBindsArray() {
    return makeInputBindsArray( Bind<CHAR>( "USER", 100 ), Bind<CHAR>( "HOST", 100 ),

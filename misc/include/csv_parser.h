@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <span>
 #include <string>
 #include <vector>
 
@@ -14,7 +13,7 @@ namespace seth_ql {
 
    std::vector<std::vector<std::string>> get_csv_rows( const std::string& csv_path );
    void insert_csv_to_table( MYSQL* conn, const std::string& table_name,
-                             const std::string& csv_path, std::span<const bool> quoted );
+                             const std::string& csv_path, const std::vector<bool>& quoted );
 
 }  // namespace seth_ql
 

@@ -11,12 +11,11 @@
 #include "myVars.h"
 
 using namespace seth_ql;
-using enum seth_ql::Field;
 
 int main() {
    try {
       MySQLSession::init();
-      auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
+      Span<const bool> quoted auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
       Statement stmt( db_conn, "INSERT into client values(?,?,?)" );
       auto clientIn = makeInputBindsArray(
           Bind<INT>( "client_id" ), Bind<VARCHAR>( "client_name", 100 ), Bind<INT>( "branch_id" ) );
@@ -40,7 +39,7 @@ int main() {
       **++it = "3";
       stmt.execute();
 
-      printf("Success\n");
+      printf( "Success\n" );
 
    } catch ( std::runtime_error& e ) { std::cerr << e.what(); }
 

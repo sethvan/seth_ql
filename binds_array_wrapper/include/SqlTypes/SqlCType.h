@@ -7,13 +7,13 @@
 #include <cstring>
 #include <iomanip>
 #include <iterator>
-#include <span>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
+#include "Span.hpp"
 #include "utilities.h"
 
 /*
@@ -101,8 +101,8 @@ namespace seth_ql {
    template <>
    struct is_approved_type<MYSQL_TIME> : std::true_type {};
 
-   template <typename T>
-   concept ApprovedType = is_approved_type<T>::value;
+   // template <typename T>
+   // concept ApprovedType = is_approved_type<T>::value;
 
    enum class Field {
       INT,
@@ -144,140 +144,139 @@ namespace seth_ql {
 
    // To facilitate Value() methods of InputCType and OutputCType which return references to the
    // derived class's value members.
-   using enum Field;
 
    template <Field T>
    struct ValType {};
    template <>
-   struct ValType<INT> {
+   struct ValType<Field::INT> {
       using type = int;
    };
    template <>
-   struct ValType<INT_UNSIGNED> {
+   struct ValType<Field::INT_UNSIGNED> {
       using type = unsigned int;
    };
    template <>
-   struct ValType<CHAR> {
+   struct ValType<Field::CHAR> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<VARCHAR> {
+   struct ValType<Field::VARCHAR> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<TINYTEXT> {
+   struct ValType<Field::TINYTEXT> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<TEXT> {
+   struct ValType<Field::TEXT> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<BLOB> {
+   struct ValType<Field::BLOB> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<MEDIUMTEXT> {
+   struct ValType<Field::MEDIUMTEXT> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<MEDIUMBLOB> {
+   struct ValType<Field::MEDIUMBLOB> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<LONGTEXT> {
+   struct ValType<Field::LONGTEXT> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<LONGBLOB> {
+   struct ValType<Field::LONGBLOB> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<TINYINT> {
+   struct ValType<Field::TINYINT> {
       using type = signed char;
    };
    template <>
-   struct ValType<TINYINT_UNSIGNED> {
+   struct ValType<Field::TINYINT_UNSIGNED> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<SMALLINT> {
+   struct ValType<Field::SMALLINT> {
       using type = short;
    };
    template <>
-   struct ValType<SMALLINT_UNSIGNED> {
+   struct ValType<Field::SMALLINT_UNSIGNED> {
       using type = unsigned short;
    };
    template <>
-   struct ValType<BIGINT> {
+   struct ValType<Field::BIGINT> {
       using type = long;
    };
    template <>
-   struct ValType<BIGINT_UNSIGNED> {
+   struct ValType<Field::BIGINT_UNSIGNED> {
       using type = unsigned long;
    };
    template <>
-   struct ValType<FLOAT> {
+   struct ValType<Field::FLOAT> {
       using type = float;
    };
    template <>
-   struct ValType<DOUBLE> {
+   struct ValType<Field::DOUBLE> {
       using type = double;
    };
    template <>
-   struct ValType<DECIMAL> {  // this one is special
+   struct ValType<Field::DECIMAL> {  // this one is special
       using type = double;
    };
    template <>
-   struct ValType<DATE> {
+   struct ValType<Field::DATE> {
       using type = MYSQL_TIME;
    };
    template <>
-   struct ValType<DATETIME> {
+   struct ValType<Field::DATETIME> {
       using type = MYSQL_TIME;
    };
    template <>
-   struct ValType<TIMESTAMP> {
+   struct ValType<Field::TIMESTAMP> {
       using type = MYSQL_TIME;
    };
    template <>
-   struct ValType<TIME> {
+   struct ValType<Field::TIME> {
       using type = MYSQL_TIME;
    };
    template <>
-   struct ValType<ENUM> {
+   struct ValType<Field::ENUM> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<SET> {
+   struct ValType<Field::SET> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<BOOLEAN> {
+   struct ValType<Field::BOOLEAN> {
       using type = signed char;
    };
    template <>
-   struct ValType<BIT> {
+   struct ValType<Field::BIT> {
       using type = unsigned long;
    };
    template <>
-   struct ValType<GEOMETRY> {
+   struct ValType<Field::GEOMETRY> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<JSON> {
+   struct ValType<Field::JSON> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<BINARY> {
+   struct ValType<Field::BINARY> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<VARBINARY> {
+   struct ValType<Field::VARBINARY> {
       using type = unsigned char;
    };
    template <>
-   struct ValType<TINYBLOB> {
+   struct ValType<Field::TINYBLOB> {
       using type = unsigned char;
    };
 

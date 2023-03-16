@@ -2,7 +2,6 @@
 #include "giraffeBinds.h"
 
 using namespace seth_ql;
-using enum seth_ql::Field;
 
 BindsArray<InputCType> branchInputBindsArray() {
    return makeInputBindsArray( Bind<INT>( "branch_id" ), Bind<VARCHAR>( "branch_name", 100 ),

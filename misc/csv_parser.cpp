@@ -2,9 +2,9 @@
 
 #include <mysql/mysql.h>
 
-#include <span>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 #include "Query.h"
 
@@ -94,7 +94,7 @@ namespace seth_ql {
    }
 
    void insert_csv_to_table( MYSQL* conn, const std::string& table_name,
-                             const std::string& csv_path, std::span<const bool> quoted ) {
+                             const std::string& csv_path, const std::vector<bool>& quoted ) {
       auto rows = get_csv_rows( csv_path );
       std::ostringstream os;
 

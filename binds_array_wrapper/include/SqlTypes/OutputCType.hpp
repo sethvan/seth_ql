@@ -17,10 +17,10 @@ namespace seth_ql {
 
       template <Field type>
       const auto* Value() {
-         if constexpr ( type == DECIMAL ) {
+         if constexpr ( type == Field::DECIMAL ) {
             return static_cast<unsigned char*>( buffer );
          } else {
-            return static_cast<ValType<type>::type*>( buffer );
+            return static_cast<typename ValType<type>::type*>( buffer );
          }
       }
    };
@@ -33,9 +33,11 @@ namespace seth_ql {
       OutImpl() = delete;
       OutImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
           : OutputCType( _fieldName, ( Type == MYSQL_TYPE_BOOL ? MYSQL_TYPE_TINY : Type ),
-                         ( std::same_as<T, std::basic_string<unsigned char>> ? nullptr : &value ),
+                         ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ),
                          _bufferLength ) {
-         if constexpr ( std::same_as<T, std::basic_string<unsigned char>> ) {
+         static_assert( is_approved_type<T>::value,
+                        "Value type given to InputCType is not an approved type" );
+         if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
             value.resize( _bufferLength, '\0' );
             buffer = value.data();
          }
@@ -45,7 +47,7 @@ namespace seth_ql {
          os << std::boolalpha << std::setprecision( 15 );
          if ( isNull ) {
             os << "NULL";
-         } else if constexpr ( std::same_as<T, std::basic_string<unsigned char>> ) {
+         } else if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
             if ( value.size() ) {
                std::string out;
                out.reserve( length );
@@ -59,7 +61,7 @@ namespace seth_ql {
             os << static_cast<int>( value );
          } else if constexpr ( Type == MYSQL_TYPE_BOOL ) {
             os << static_cast<bool>( value );
-         } else if constexpr ( std::same_as<T, MYSQL_TIME> ) {
+         } else if constexpr ( std::is_same_v<T, MYSQL_TIME> ) {
             std::ostringstream _os;
             _os << value.year << "-" << ( value.month > 9 ? "" : "0" )
                 << std::to_string( value.month ) << "-" << ( value.day > 9 ? "" : "0" )
