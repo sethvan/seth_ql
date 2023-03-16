@@ -15,7 +15,7 @@ using namespace seth_ql;
 int main() {
    try {
       MySQLSession::init();
-      Span<const bool> quoted auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
+      auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE );
       Statement stmt( db_conn, "INSERT into client values(?,?,?)" );
       auto clientIn = makeInputBindsArray(
           Bind<INT>( "client_id" ), Bind<VARCHAR>( "client_name", 100 ), Bind<INT>( "branch_id" ) );
