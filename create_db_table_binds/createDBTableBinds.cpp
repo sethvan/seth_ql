@@ -22,6 +22,7 @@
 #include "getDBTables.h"
 #include "makeBinds.hpp"
 #include "utilities.h"
+#include <string>
 
 namespace seth_ql {
 

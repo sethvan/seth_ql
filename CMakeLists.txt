@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 3.16)
-
 project( seth_ql VERSION 1.0.0 LANGUAGES "CXX" )
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_EXTENSIONS off)
 
-find_library(MYSQLCLIENT_LIBRARY NAMES mysqlclient HINTS "/usr/lib64/mysql/")
+include(FindPkgConfig)
+pkg_check_modules(LIBMYSQLCLIENT REQUIRED mysqlclient)
+link_directories(${LIBMYSQLCLIENT_LIBRARY_DIRS})
 
-if(NOT MYSQLCLIENT_LIBRARY)
-  message(FATAL_ERROR "mysqlclient library not found")
-endif()
 
 add_subdirectory(binds_array_wrapper)
 add_subdirectory(create_db_table_binds)
@@ -21,5 +19,5 @@ add_subdirectory(tester_main)
 target_compile_features( tester PRIVATE cxx_std_17)
 target_link_options( tester PRIVATE -fsanitize=address)
 target_compile_options( tester PRIVATE
-    -Wall -Wextra -pedantic -Wconversion -Wl,-z,defs -fwrapv -O3
+    -Wall -Wextra -pedantic -Wconversion -Wl,-z,defs -fwrapv -O3 
 )
