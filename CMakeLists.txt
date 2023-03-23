@@ -14,14 +14,14 @@ if(LIBMYSQLCLIENT_FOUND)
     set(MYSQL_LIBRARIES ${LIBMYSQLCLIENT_LIBRARIES})
 else()
     # If LIBMYSQLCLIENT is not found using find_package, try to find the libraries manually
-    find_library(MYSQL_LIBRARY NAMES mysqlclient PATHS "/usr/lib64/mysql/")
+    find_library(MYSQL_LIBRARY NAMES mysqlclient PATHS "/usr/lib64/mysql/" "C:\\Program Files\\MySQL\\MySQL Server 8.0\\lib")
 
     if(NOT MYSQL_LIBRARY)
         # If the library is not found, print an error message and stop the configuration process
         message(FATAL_ERROR "MySQL client library not found")
     else()
         # If the library is found, set the include directory and library variables
-        find_path(MYSQL_INCLUDE_DIR NAMES "mysql.h" PATHS "/usr/include/mysql")
+        find_path(MYSQL_INCLUDE_DIR NAMES "mysql.h" PATHS "/usr/include/mysql" "C:\\Program Files\\MySQL\\MySQL Server 8.0\\include")
         if(NOT MYSQL_INCLUDE_DIR)
             message(FATAL_ERROR "MySQL include directory not found")
         else()
@@ -41,7 +41,11 @@ add_subdirectory(misc)
 add_subdirectory(tester_main)
 
 target_compile_features( tester PRIVATE cxx_std_17)
-target_link_options( tester PRIVATE -fsanitize=address)
-target_compile_options( tester PRIVATE
-    -Wall -Wextra -pedantic -Wconversion -Wl,-z,defs -fwrapv -O3 
-)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    message(STATUS "GCC detected, adding compile flags")
+    target_link_options( tester PRIVATE -fsanitize=address)
+    target_compile_options( tester PRIVATE
+        -Wall -Wextra -pedantic -Wconversion -Wl,-z,defs -fwrapv -O3 
+    )
+endif(CMAKE_COMPILER_IS_GNUCXX)
