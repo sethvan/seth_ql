@@ -6,3 +6,8 @@ build
 /res/clipboard.cpp
 .gitignore
 tester
+run_Debug
+run_Release
+CMakeUserPresets.json
+res
+res1

@@ -1,8 +1,0 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-3.0-only or GPL-3.0-or-later
-
-# Builds project, moves executable to top of project directory
-
-cmake -B build
-cmake --build build
-mv $(pwd)/build/tester_main/tester $(pwd)/tester
