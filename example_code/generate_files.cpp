@@ -12,8 +12,8 @@ using namespace seth_ql;
 
 int main() {
    try {
-      createDBTableBinds( HOST, USER, PASSWORD, "girrafe", "sample_code/generated_files/girrafeBinds.h",
-                          "sample_code/generated_files/girrafeBinds.cpp", "girrafeBinds.h", 100 );
+      createDBTableBinds( HOST, USER, PASSWORD, "girrafe", "example_code/generated_files/girrafeBinds.h",
+                          "example_code/generated_files/girrafeBinds.cpp", "girrafeBinds.h", 100 );
 
       printf( "Success\n" );
 

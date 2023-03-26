@@ -24,8 +24,7 @@ else()
     endif()
 endif()
 
-if(STATIC_LIB_REQUIRED)
-    add_library(seth_ql STATIC 
+add_library(seth_ql STATIC
     src/binds_array_wrapper/SqlTypes.cpp 
     src/binds_array_wrapper/utilities.cpp 
     src/create_db_table_binds/createDBTableBinds.cpp 
@@ -33,32 +32,18 @@ if(STATIC_LIB_REQUIRED)
     src/other_mysql_wrappers/common.cpp 
     src/other_mysql_wrappers/MySQLSession.cpp 
     src/other_mysql_wrappers/Query.cpp 
-    src/other_mysql_wrappers/Statement.cpp 
-    )
-else()
-add_library(seth_ql SHARED 
-    src/binds_array_wrapper/SqlTypes.cpp 
-    src/binds_array_wrapper/utilities.cpp 
-    src/create_db_table_binds/createDBTableBinds.cpp 
-    src/create_db_table_binds/getDBTables.cpp 
-    src/other_mysql_wrappers/common.cpp 
-    src/other_mysql_wrappers/MySQLSession.cpp 
-    src/other_mysql_wrappers/Query.cpp 
-    src/other_mysql_wrappers/Statement.cpp 
-    )
-endif()
+    src/other_mysql_wrappers/Statement.cpp )
 
-target_link_libraries(seth_ql PRIVATE
-${MYSQL_LIBRARIES}
-)
+target_link_libraries(seth_ql PUBLIC ${MYSQL_LIBRARIES})
+
 target_include_directories( seth_ql PUBLIC include ${MYSQL_INCLUDE_DIR})
 
 install(TARGETS seth_ql
-        EXPORT seth_ql
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib)
+    EXPORT seth_ql
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
 
 install(DIRECTORY include/
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h*")
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h*")
 
