@@ -24,7 +24,8 @@ else()
     endif()
 endif()
 
-add_library(seth_ql STATIC
+if(SHARED_LIB_REQUIRED)
+    add_library(seth_ql SHARED 
     src/binds_array_wrapper/SqlTypes.cpp 
     src/binds_array_wrapper/utilities.cpp 
     src/create_db_table_binds/createDBTableBinds.cpp 
@@ -32,7 +33,20 @@ add_library(seth_ql STATIC
     src/other_mysql_wrappers/common.cpp 
     src/other_mysql_wrappers/MySQLSession.cpp 
     src/other_mysql_wrappers/Query.cpp 
-    src/other_mysql_wrappers/Statement.cpp )
+    src/other_mysql_wrappers/Statement.cpp 
+    )
+else()
+add_library(seth_ql STATIC 
+    src/binds_array_wrapper/SqlTypes.cpp 
+    src/binds_array_wrapper/utilities.cpp 
+    src/create_db_table_binds/createDBTableBinds.cpp 
+    src/create_db_table_binds/getDBTables.cpp 
+    src/other_mysql_wrappers/common.cpp 
+    src/other_mysql_wrappers/MySQLSession.cpp 
+    src/other_mysql_wrappers/Query.cpp 
+    src/other_mysql_wrappers/Statement.cpp 
+    )
+endif()
 
 target_link_libraries(seth_ql PUBLIC ${MYSQL_LIBRARIES})
 

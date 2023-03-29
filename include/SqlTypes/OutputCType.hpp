@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <type_traits>
 
 #include "SqlTypes/SqlCType.h"
 
@@ -15,13 +16,16 @@ namespace seth_ql {
           : SqlCType( _fieldName, type, _buffer, _bufferLength ) {}
       virtual ~OutputCType() = default;
 
-      template <Field type>
-      const auto* Value() {
-         if constexpr ( type == Field::DECIMAL ) {
-            return static_cast<unsigned char*>( buffer );
-         } else {
-            return static_cast<typename ValType<type>::type*>( buffer );
-         }
+      template <Field Type>
+      std::enable_if_t<!ValType<Type>::is_char_array, const typename ValType<Type>::type&> Value() {
+         return *static_cast<typename ValType<Type>::type*>( buffer );
+      }
+
+      template <Field Type>
+      std::enable_if_t<ValType<Type>::is_char_array, const std::basic_string<unsigned char>> Value() {
+         unsigned char* ptr = static_cast<unsigned char*>( buffer );
+         std::basic_string<unsigned char> str( ptr, ptr + length );
+         return str;
       }
    };
 
@@ -33,10 +37,8 @@ namespace seth_ql {
       OutImpl() = delete;
       OutImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
           : OutputCType( _fieldName, ( Type == MYSQL_TYPE_BOOL ? MYSQL_TYPE_TINY : Type ),
-                         ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ),
-                         _bufferLength ) {
-         static_assert( is_approved_type<T>::value,
-                        "Value type given to InputCType is not an approved type" );
+                         ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ), _bufferLength ) {
+         static_assert( is_approved_type<T>::value, "Value type given to InputCType is not an approved type" );
          if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
             value.resize( _bufferLength, '\0' );
             buffer = value.data();
@@ -51,8 +53,7 @@ namespace seth_ql {
             if ( value.size() ) {
                std::string out;
                out.reserve( length );
-               std::copy( value.begin(), std::next( value.begin(), length ),
-                          std::back_inserter( out ) );
+               std::copy( value.begin(), std::next( value.begin(), length ), std::back_inserter( out ) );
                os << out;
             } else {
                os << "NULL";
@@ -63,9 +64,8 @@ namespace seth_ql {
             os << static_cast<bool>( value );
          } else if constexpr ( std::is_same_v<T, MYSQL_TIME> ) {
             std::ostringstream _os;
-            _os << value.year << "-" << ( value.month > 9 ? "" : "0" )
-                << std::to_string( value.month ) << "-" << ( value.day > 9 ? "" : "0" )
-                << std::to_string( value.day ) << " " << ( value.hour > 9 ? "" : "0" )
+            _os << value.year << "-" << ( value.month > 9 ? "" : "0" ) << std::to_string( value.month ) << "-"
+                << ( value.day > 9 ? "" : "0" ) << std::to_string( value.day ) << " " << ( value.hour > 9 ? "" : "0" )
                 << std::to_string( value.hour ) << ":" << ( value.minute > 9 ? "" : "0" )
                 << std::to_string( value.minute ) << ":" << ( value.second > 9 ? "" : "0" )
                 << std::to_string( value.second );

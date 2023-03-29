@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string_view>
+#include <type_traits>
 
 #include "Span.hpp"
 #include "SqlTypes/SqlCType.h"
@@ -21,9 +22,18 @@ namespace seth_ql {
       virtual void operator=( Span<const unsigned char> newValue ) = 0;
       virtual void operator=( const MYSQL_TIME& newValue ) = 0;
 
-      template <Field type>
-      auto& Value() {
-         return *static_cast<typename ValType<type>::type*>( buffer );
+      template <Field Type>
+      std::enable_if_t<(!ValType<Type>::is_char_array || !std::is_same_v<typename ValType<Type>::type, unsigned char>),
+                       typename ValType<Type>::type&>
+      Value() {
+         return *static_cast<typename ValType<Type>::type*>( buffer );
+      }
+
+      template <Field Type>
+      std::enable_if_t<ValType<Type>::is_char_array, std::basic_string<unsigned char>> Value() {
+         unsigned char* ptr = static_cast<unsigned char*>( buffer );
+         std::basic_string<unsigned char> str( ptr, ptr + length );
+         return str;
       }
    };
 
@@ -38,10 +48,8 @@ namespace seth_ql {
       InImpl() = delete;
       InImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
           : InputCType( _fieldName, ( Type == MYSQL_TYPE_BOOL ? MYSQL_TYPE_TINY : Type ),
-                        ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ),
-                        _bufferLength ) {
-         static_assert( is_approved_type<T>::value,
-                        "Value type given to InputCType is not an approved type" );
+                        ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ), _bufferLength ) {
+         static_assert( is_approved_type<T>::value, "Value type given to InputCType is not an approved type" );
          if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
             value.resize( _bufferLength, '\0' );
             buffer = value.data();
@@ -108,9 +116,8 @@ namespace seth_ql {
          } else if constexpr ( Type == MYSQL_TYPE_BOOL ) {
             os << static_cast<bool>( value );
          } else if constexpr ( std::is_same_v<T, MYSQL_TIME> ) {
-            os << value.year << "-" << ( value.month > 9 ? "" : "0" )
-               << std::to_string( value.month ) << "-" << ( value.day > 9 ? "" : "0" )
-               << std::to_string( value.day ) << " " << ( value.hour > 9 ? "" : "0" )
+            os << value.year << "-" << ( value.month > 9 ? "" : "0" ) << std::to_string( value.month ) << "-"
+               << ( value.day > 9 ? "" : "0" ) << std::to_string( value.day ) << " " << ( value.hour > 9 ? "" : "0" )
                << std::to_string( value.hour ) << ":" << ( value.minute > 9 ? "" : "0" )
                << std::to_string( value.minute ) << ":" << ( value.second > 9 ? "" : "0" )
                << std::to_string( value.second );

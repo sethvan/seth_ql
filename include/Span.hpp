@@ -1,4 +1,4 @@
-// Class written by ChatGPT so as to not need C++20 for use cases of span in project
+// Class written with help of ChatGPT so as to not need C++20 for use cases of span in project
 
 #ifndef INCLUDED_SPAN_H
 #define INCLUDED_SPAN_H
@@ -32,30 +32,24 @@ namespace seth_ql {
       template <typename U, std::size_t N>
       constexpr Span( Span<U, N> other ) noexcept : data_( other.data() ), size_( other.size() ) {}
 
-      template <typename Container, typename = std::enable_if_t<
-                                        has_data_member<Container>::value &&
-                                        !std::is_same_v<std::remove_cv_t<Container>, std::string>>>
+      template <typename Container,
+                typename = std::enable_if_t<has_data_member<Container>::value &&
+                                            !std::is_same_v<std::remove_cv_t<Container>, std::string>>>
       Span( Container& container ) : data_( container.data() ), size_( container.size() ) {
          static_assert(
-             std::is_same_v<std::remove_pointer_t<std::remove_cv_t<
-                                std::remove_reference_t<decltype( container.data() )>>>,
-                            T> ||
-                 std::is_convertible_v<
-                     std::remove_cv_t<std::remove_reference_t<decltype( container.data()[ 0 ] )>>,
-                     T>,
+             std::is_same_v<
+                 std::remove_pointer_t<std::remove_cv_t<std::remove_reference_t<decltype( container.data() )>>>, T> ||
+                 std::is_convertible_v<std::remove_cv_t<std::remove_reference_t<decltype( container.data()[ 0 ] )>>, T>,
              "Container element type must be compatible with Span element type." );
       }
-      template <typename Container, typename = std::enable_if_t<
-                                        has_data_member<Container>::value &&
-                                        !std::is_same_v<std::remove_cv_t<Container>, std::string>>>
+      template <typename Container,
+                typename = std::enable_if_t<has_data_member<Container>::value &&
+                                            !std::is_same_v<std::remove_cv_t<Container>, std::string>>>
       Span( const Container& container ) : data_( container.data() ), size_( container.size() ) {
          static_assert(
-             std::is_same_v<std::remove_pointer_t<std::remove_cv_t<
-                                std::remove_reference_t<decltype( container.data() )>>>,
-                            T> ||
-                 std::is_convertible_v<
-                     std::remove_cv_t<std::remove_reference_t<decltype( container.data()[ 0 ] )>>,
-                     T>,
+             std::is_same_v<
+                 std::remove_pointer_t<std::remove_cv_t<std::remove_reference_t<decltype( container.data() )>>>, T> ||
+                 std::is_convertible_v<std::remove_cv_t<std::remove_reference_t<decltype( container.data()[ 0 ] )>>, T>,
              "Container element type must be compatible with Span element type." );
       }
 

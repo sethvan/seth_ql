@@ -68,9 +68,9 @@ namespace seth_ql {
                upperExternalType += "_UNSIGNED";
             }
             function_body << ( count++ < 1 ? "" : ", " ) << "Bind<"
-                          << "T_" << upperExternalType << ">(\"" << field.name << "\""
-                          << ( isCharArray( field.type ) ? ", " : "" )
-                          << ( isCharArray( field.type ) ? std::to_string( buff_size ) : "" ) << ")";
+                          << "Field::" << upperExternalType << ">(\"" << field.name << "\""
+                          << ( ( isCharArray( field.type ) && buff_size ) ? ", " : "" )
+                          << ( ( isCharArray( field.type ) && buff_size ) ? std::to_string( buff_size ) : "" ) << ")";
          } );
          definition_body << funcReq << "{\n    return makeInputBindsArray( " << function_body.str() << " );\n}\n";
          definition_body << funcRes << "{\n    return makeOutputBindsArray( " << std::move( function_body.str() )

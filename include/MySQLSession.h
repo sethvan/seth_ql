@@ -30,7 +30,9 @@ namespace seth_ql {
    };
 
    [[nodiscard]] Connection createConnection( const std::string& host, const std::string& user,
-                                              const std::string& password, const std::string& database );
+                                              const std::string& password, const std::string& database,
+                                              unsigned int port, const std::string& unix_socket,
+                                              unsigned long client_flag );
 
 }  // namespace seth_ql
 

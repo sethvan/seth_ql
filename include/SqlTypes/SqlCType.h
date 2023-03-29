@@ -152,134 +152,167 @@ namespace seth_ql {
    struct ValType {};
    template <>
    struct ValType<Field::INT> {
+      static constexpr bool is_char_array = false;
       using type = int;
    };
    template <>
    struct ValType<Field::INT_UNSIGNED> {
+      static constexpr bool is_char_array = false;
       using type = unsigned int;
    };
    template <>
    struct ValType<Field::CHAR> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::VARCHAR> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::TINYTEXT> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::TEXT> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::BLOB> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::MEDIUMTEXT> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::MEDIUMBLOB> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::LONGTEXT> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::LONGBLOB> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::TINYINT> {
+      static constexpr bool is_char_array = false;
       using type = signed char;
    };
    template <>
    struct ValType<Field::TINYINT_UNSIGNED> {
+      static constexpr bool is_char_array = false;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::SMALLINT> {
+      static constexpr bool is_char_array = false;
       using type = short;
    };
    template <>
    struct ValType<Field::SMALLINT_UNSIGNED> {
+      static constexpr bool is_char_array = false;
       using type = unsigned short;
    };
    template <>
    struct ValType<Field::BIGINT> {
+      static constexpr bool is_char_array = false;
       using type = long;
    };
    template <>
    struct ValType<Field::BIGINT_UNSIGNED> {
+      static constexpr bool is_char_array = false;
       using type = unsigned long;
    };
    template <>
    struct ValType<Field::FLOAT> {
+      static constexpr bool is_char_array = false;
       using type = float;
    };
    template <>
    struct ValType<Field::DOUBLE> {
+      static constexpr bool is_char_array = false;
       using type = double;
    };
    template <>
    struct ValType<Field::DECIMAL> {  // this one is special
+      static constexpr bool is_char_array = true;
       using type = double;
    };
    template <>
    struct ValType<Field::DATE> {
+      static constexpr bool is_char_array = false;
       using type = MYSQL_TIME;
    };
    template <>
    struct ValType<Field::DATETIME> {
+      static constexpr bool is_char_array = false;
       using type = MYSQL_TIME;
    };
    template <>
    struct ValType<Field::TIMESTAMP> {
+      static constexpr bool is_char_array = false;
       using type = MYSQL_TIME;
    };
    template <>
    struct ValType<Field::TIME> {
+      static constexpr bool is_char_array = false;
       using type = MYSQL_TIME;
    };
    template <>
    struct ValType<Field::ENUM> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::SET> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::BOOLEAN> {
+      static constexpr bool is_char_array = false;
       using type = signed char;
    };
    template <>
    struct ValType<Field::BIT> {
+      static constexpr bool is_char_array = false;
       using type = unsigned long;
    };
    template <>
    struct ValType<Field::GEOMETRY> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::JSON> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::BINARY> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::VARBINARY> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
    template <>
    struct ValType<Field::TINYBLOB> {
+      static constexpr bool is_char_array = true;
       using type = unsigned char;
    };
 
