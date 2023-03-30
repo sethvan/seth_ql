@@ -24,8 +24,8 @@ else()
     endif()
 endif()
 
-if(SHARED_LIB_REQUIRED)
-    add_library(seth_ql SHARED 
+if(STATIC_LIB_REQUIRED)
+    add_library(seth_ql STATIC 
     src/binds_array_wrapper/SqlTypes.cpp 
     src/binds_array_wrapper/utilities.cpp 
     src/create_db_table_binds/createDBTableBinds.cpp 
@@ -36,7 +36,7 @@ if(SHARED_LIB_REQUIRED)
     src/other_mysql_wrappers/Statement.cpp 
     )
 else()
-add_library(seth_ql STATIC 
+add_library(seth_ql SHARED
     src/binds_array_wrapper/SqlTypes.cpp 
     src/binds_array_wrapper/utilities.cpp 
     src/create_db_table_binds/createDBTableBinds.cpp 
