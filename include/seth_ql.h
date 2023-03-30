@@ -9,7 +9,6 @@
 #include "Statement.h"
 #include "common.h"
 #include "createDBTableBinds.h"
-#include "csv_parser.h"
 #include "getDBTables.h"
 #include "makeBinds.hpp"
 #include "utilities.h"
