@@ -54,7 +54,8 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_INIT": "-DSTATIC_LIB_REQUIRED=ON"  
       }
     },
     {
@@ -63,7 +64,8 @@
       "description": "Sets release build type",
       "inherits": "x64-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_INIT": "-DSTATIC_LIB_REQUIRED=ON"
       }
     },
     {
@@ -76,7 +78,8 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_INIT": "-DSTATIC_LIB_REQUIRED=ON" 
       }
     },
     {
@@ -85,7 +88,8 @@
       "description": "Sets release build type",
       "inherits": "x86-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_INIT": "-DSTATIC_LIB_REQUIRED=ON"
       }
     }
    ],
