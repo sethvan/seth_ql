@@ -38,6 +38,8 @@ createDBTableBinds() /* Retrieves the data for all the tables in a specified dat
 #include <mysql.h>
 #include "seth_ql.h"
 
+using namespace seth_ql;
+
 int main(){
     MySQLSession::init();
     auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
