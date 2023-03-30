@@ -4,6 +4,11 @@ project( seth_ql VERSION 1.0.0 LANGUAGES "CXX" )
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_EXTENSIONS off)
+set(STATIC_LIB_REQUIRED OFF)
+
+if(win32)
+    set(STATIC_LIB_REQUIRED on)
+endif(
 
 find_package(LIBMYSQL NAMES libmysql)
 
