@@ -33,7 +33,7 @@ createDBTableBinds() /* Retrieves the data for all the tables in a specified dat
     specified paths. */
 ```
 	
-#### 'INSERT INTO' prepared statement example taken from C API docs done with seth_ql wrapper:
+#### 'INSERT INTO' prepared statement example taken from C API docs but done with seth_ql wrapper:
 ```c++
 #include <mysql.h>
 #include "seth_ql.h"
