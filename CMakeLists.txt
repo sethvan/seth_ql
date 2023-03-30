@@ -8,7 +8,7 @@ set(STATIC_LIB_REQUIRED OFF)
 
 if(win32)
     set(STATIC_LIB_REQUIRED on)
-endif(
+endif()
 
 find_package(LIBMYSQL NAMES libmysql)
 
