@@ -18,14 +18,10 @@ Adding a few other wrappers as I go starting with minimal functionality.
    _cd_ into the directory where you wish to place project and clone repo:  
    `$ git clone https://github.com/sethvan/seth_ql.git                                      `  
    
-   Select and build either Debug or Release version of library using the corresponding preset  
-   from the _CMakePresets.json_ file. Debug example:  
+   Select and build either Debug or Release for shared or static libraries using the corresponding  
+   preset from the _CMakePresets.json_ file in project directory:  
    `$ cmake --preset debug-linux                                                            `  
    `$ cmake --build --preset debug-linux                                                    `  
-   
-   Default build is a shared library, but if you want a static library you may specify  that  
-   in the build command like so:  
-   `$ cmake --build --preset debug-linux -DSTATIC_LIB_REQUIRED=ON                           `
    
    If CMake is unable to find _'libmysqlclient.so'_ or _'mysql.h'_ on your machine, then add   
    your machine´s paths for them to the _PATHS_ at the end of the _find_library()_ and _find_path()_  

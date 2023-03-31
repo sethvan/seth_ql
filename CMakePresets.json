@@ -17,7 +17,7 @@
       },
      {
        "name": "debug-linux",
-       "description": "Configure for Debug on Linux",
+       "description": "Configure for Debug on Linux for shared library",
        "inherits": "linux-base",
        "cacheVariables": {
          "CMAKE_BUILD_TYPE": "Debug",        
@@ -27,13 +27,34 @@
      },
      {
       "name": "release-linux",
-      "description": "Configure for Release on Linux",
+      "description": "Configure for Release on Linux for shared library",
       "inherits": "linux-base",
       "cacheVariables": {
          "CMAKE_BUILD_TYPE": "Release",
          "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -O3"         
        }
     },
+    {
+      "name": "debug-linux-static",
+      "description": "Configure for Debug on Linux for static library",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",        
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -ggdb3 -D_GLIBCXX_ASSERTIONS=1 -lasan -fsanitize=address",
+        "STATIC_LIB_REQUIRED": "ON"
+      }
+    },
+    {
+     "name": "release-linux-static",
+     "description": "Configure for Release on Linux for static library",
+     "inherits": "linux-base",
+     "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -O3",
+        "STATIC_LIB_REQUIRED": "ON"         
+      }
+   },
     {
       "name": "base",
       "description": "For more information: http://aka.ms/cmakepresetsvs",
@@ -76,7 +97,7 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -90,6 +111,14 @@
     }
    ],
    "buildPresets": [
+{  
+   "name": "debug-linux-static",
+   "configurePreset": "debug-linux-static"
+},
+{
+   "name": "release-linux-static",
+   "configurePreset": "release-linux-static"
+},
 {  
    "name": "debug-linux",
    "configurePreset": "debug-linux"
