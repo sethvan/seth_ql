@@ -47,8 +47,38 @@ Adding a few other wrappers as I go starting with minimal functionality.
    your _~/.bashrc_ for the missing path:  
    `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    `  
 
-* ### Windows with Visual Studio
-   (To be filled out)
+* ### Windows using Visual Studio Community 2022
+   
+   Some things to note:
+   
+   In windows at present just including presets for generating a static library version of library.  
+   
+   From my as of yet limited experience with Visual Studio, it appears that it is necessary for all  
+   libraries linked in a project to be of a Debug build for there to be a Debug build built from the  
+   project. Since _libmysql.lib_ and _mysqlclient.lib_ are not debug builds, it would be necessary for  
+   you to build Debug builds of whichever one of them you are using from source and chose it for  
+   linking to your project´s Debug build. The following instructions are for the Release version.
+   
+   ---
+   
+   After library is built it is your option to run the install command that would place it in your  
+   programs folder. It is not necessary to do so in order to use the library but if you wish to do  
+   so then you must open Visual Studio as an administrator. It is up to you.
+   
+   Open Visual Studio and choose _'Clone a repository'_.  
+   In _'Repository location'_ paste 'https://github.com/sethvan/seth_ql' and click _'çlone'_.  
+   In the _Solution Explorer_ right click on _Folder View_ and click _Open_.  
+   CMake generation will occur in output terminal every time it detects a config selected for first time.  
+   Make sure a release config version is selected before you build.
+   Select the desired config ( _x64-release_ or _x86-release_ ) from the dropdown.
+   Click _Build_ and then _Build_ _All_.  
+     
+   If you wish to install, you may do so at this point by clicking _Build_ then _Install_ _seth_ql_.
+   Make a note of where it was installed.  
+   (to be continued)
+   
+   
+   
    
 ## Principal classes and functions
 ```c++
