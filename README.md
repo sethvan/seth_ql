@@ -28,7 +28,7 @@ Adding a few other wrappers as I go starting with minimal functionality.
    functions in the top-level directory´s _CMakeLists.txt_ file.  
    
    To install first _cd_ into the folder where your chosen preset built the library.  
-   For the release version it will be in _'build/debug-linux'_.   
+   For the debug version it will be in _'build/debug-linux'_.   
    `$ cd build/debug-linux                                                                  `  
    
    Install using CMake install command. Default path for install on linux is _'/usr/local/'_,  
