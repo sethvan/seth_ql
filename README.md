@@ -15,6 +15,9 @@ Adding a few other wrappers as I go starting with minimal functionality.
 ## Installation
 * ### Linux
 
+   #### Building and Installing the Library
+   ---
+
    _cd_ into the directory where you wish to place project and clone repo:  
    `$ git clone https://github.com/sethvan/seth_ql.git                                      `  
    
@@ -45,11 +48,15 @@ Adding a few other wrappers as I go starting with minimal functionality.
    As well ensure that the paths to the different lib directories for _seth_ql.so_ and _libmysqlclient.so_  
    can be found in your system´s **LD_LIBRARY_PATH** variable. Otherwise add the following line to  
    your _~/.bashrc_ for the missing path:  
-   `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    `  
+   `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    ` 
+   
+   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
+   and you should be good to go.
 
 * ### Windows using Visual Studio Community 2022
    
-   Some things to note:
+   #### Some things to note:
+   ---
    
    In windows at present just including presets for generating a static library version of library.  
    
@@ -59,26 +66,57 @@ Adding a few other wrappers as I go starting with minimal functionality.
    you to build Debug builds of whichever one of them you are using from source and chose it for  
    linking to your project´s Debug build. The following instructions are for the Release version.
    
+   #### Building and Installing the Library
    ---
    
-   After library is built it is your option to run the install command that would place it in your  
+   After the library is built it is your option to run the install command that would place it in your  
    programs folder. It is not necessary to do so in order to use the library but if you wish to do  
    so then you must open Visual Studio as an administrator. It is up to you.
    
-   Open Visual Studio and choose _'Clone a repository'_.  
-   In _'Repository location'_ paste 'https://github.com/sethvan/seth_ql' and click _'çlone'_.  
+   Open Visual Studio and choose _Clone a repository_.  
+   In _Repository location_ paste 'https://github.com/sethvan/seth_ql' and click _çlone_.  
    In the _Solution Explorer_ right click on _Folder View_ and click _Open_.  
-   CMake generation will occur in output terminal every time it detects a config selected for first time.  
-   Make sure a release config version is selected before you build.
-   Select the desired config ( _x64-release_ or _x86-release_ ) from the dropdown.
-   Click _Build_ and then _Build_ _All_.  
+   CMake generation will occur in output terminal every time it detects a config selection.  
+   Make sure a release config version is selected before you build.  
+   Select the desired config ( _x64-release_ or _x86-release_ ) from the dropdown.  
+   Click _Build_ and then _Build_ _All_.
+   
+   If CMake is unable to find the mysql library ( neither _libmysql.lib_ nor _mysqlclient.lib_ ) or _mysql.h_  
+   on your machine, then add your machine´s paths for them to the _PATHS_ at the end of the  
+   _find_library()_ and _find_path()_ functions in the top-level directory´s _CMakeLists.txt_ file.
      
-   If you wish to install, you may do so at this point by clicking _Build_ then _Install_ _seth_ql_.
-   Make a note of where it was installed.  
-   (to be continued)
+   After it´s built, you may install if you wish at this point by clicking _Build_ then _Install_ _seth_ql_.  
+   If installed, make a note of where it was installed and close seth_ql folder in IDE.
    
+   #### Including the Library in a Project
+   ---
    
+   Open the solution where you want to use/include _seth_ql_.  
+   In the _Solution_ _Explorer_ right click on the solution folder and click _Properties_.  
+   Set the dropdown to _All_ _Configurations_ and _All_ _Platforms_.  
+   In _Configuration_ _Properties_ _>_ _C/C++_ _>_ _General_ _>_ _Additional_ _Include_ _Directories_:  
+   Add the paths to the include directories for _seth_ql.h_ and _mysql.h_.
    
+   If you installed _seth_ql_, you made note of it´s include path earlier, if not then it will be in the repo  
+   for _seth_ql_ that was created when you cloned it.  
+   The path for _mysql.h_ you will have to find. On my machine it is this:  
+   _"C:\Program Files\MySQL\MySQL Server 8.0\include"_  
+   
+   In _Configuration_ _Properties_ _>_ _Linker_ _>_ _Input_ _>_ _Additional_ _Dependencies_:  
+   Add _seth_ql.lib_ and ( depending on which you are using ) _libmysql.lib_ or _mysqlclient.lib_ .  
+   
+   In _Configuration_ _Properties_ _>_ _Linker_ _>_ _General_ _>_ _Additional_ _Library_ _Directories_:  
+   Add the paths to the directory where _seth_ql.lib_ is and the one where your MySQL library is.  
+   
+   If you installed the library, the lib directory for _seth_ql_ will be in the same directory as it´s  
+   include directory. If not then it will be the path to the specific build´s folder inside of the  
+   _seth_ql_ repo´s _out/build_ folder ( i.e., _out/build/x64-release_ ).  
+   The path for your MySQL library you will have to find. On my machine it is this:  
+   _"C:\Program Files\MySQL\MySQL Server 8.0\include"_  
+   Save changes.
+   
+   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
+   and you should be good to go.   
    
 ## Principal classes and functions
 ```c++
