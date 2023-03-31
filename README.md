@@ -5,10 +5,10 @@ My personal in progress C++ wrapper of the [MySQL C API](https://dev.mysql.com/d
 Provides a wrapper for the [MYSQL_BIND](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-data-structures.html) structs used to make [prepared statements](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-interface.html) and  [set query attributes](https://dev.mysql.com/doc/c-api/8.0/en/mysql-bind-param.html).  
 Adding a few other wrappers as I go starting with minimal functionality.
 
-## Dependencies
+## Dependencies/Requirements
 *  A MySQL-compatible server that implements the MySQL protocol
 *  Either [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) or [libmysqlclient](https://dev.mysql.com/downloads/c-api/)
-*  [CMake]([https://cmake.org/](https://cmake.org/download/)) >= 3.21
+*  [CMake](https://cmake.org/download/) >= 3.21
 *  C++ standard >= 17
 *  gcc >= 10 (unsure as of yet about clang or MSVC)
 
@@ -19,32 +19,32 @@ Adding a few other wrappers as I go starting with minimal functionality.
    `$ git clone https://github.com/sethvan/seth_ql.git                                      `  
    
    Select and build either Debug or Release for shared or static libraries using the corresponding  
-   preset from the _CMakePresets.json_ file in project directory:  
+   preset from the _CMakePresets.json_ file in project directory. Debug shared lib version example :  
    `$ cmake --preset debug-linux                                                            `  
    `$ cmake --build --preset debug-linux                                                    `  
    
-   If CMake is unable to find _'libmysqlclient.so'_ or _'mysql.h'_ on your machine, then add   
+   If CMake is unable to find _libmysqlclient.so_ or _mysql.h_ on your machine, then add   
    your machine´s paths for them to the _PATHS_ at the end of the _find_library()_ and _find_path()_  
    functions in the top-level directory´s _CMakeLists.txt_ file.  
    
    To install first _cd_ into the folder where your chosen preset built the library.  
-   For the debug version it will be in _'build/debug-linux'_.   
+   For the debug shared library version it would for example be in _build/debug-linux_.   
    `$ cd build/debug-linux                                                                  `  
    
-   Install using CMake install command. Default path for install on linux is _'/usr/local/'_,  
+   Install using CMake install command. Default path for install on linux is _/usr/local/_,  
    if you want it installed to a different path run command as so:  
    `$ cmake --install . --prefix /path/to/custom/prefix                                     `  
    Otherwise install to default path:  
    `$ cmake --install .                                                                     `
    
-   Ensure that the paths to the different include directories for _'seth_ql.h'_ and _'mysql.h'_can be  
+   Ensure that the paths to the different include directories for _seth_ql.h_ and _mysql.h_can be  
    found in your system´s **CPLUS_INCLUDE_PATH** variable. Otherwise add the following line to  
-   your _'~/.bashrc'_ for the missing path:  
+   your _~/.bashrc_ for the missing path:  
    `export CPLUS_INCLUDE_PATH=/path/to/include:$CPLUS_INCLUDE_PATH                          `  
    
-   As well ensure that the paths to the different lib directories for _'seth_ql.so'_ and _'libmysqlclient.so'_  
+   As well ensure that the paths to the different lib directories for _seth_ql.so_ and _libmysqlclient.so_  
    can be found in your system´s **LD_LIBRARY_PATH** variable. Otherwise add the following line to  
-   your _'~/.bashrc'_ for the missing path:  
+   your _~/.bashrc_ for the missing path:  
    `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    `  
 
 * ### Windows with Visual Studio
