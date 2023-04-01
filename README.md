@@ -8,6 +8,7 @@ minimal functionality.
 - [Installation](#installation)
 - [Principal Classes and Functions](#principal-classes-and-functions)
 - [Prepared Statement Example](#prepared-statement-example)
+- [GPL-3.0 license](../LICENSE)
 
 ## Dependencies and Requirements
 *  A MySQL-compatible server that implements the MySQL protocol
@@ -194,41 +195,39 @@ functions for each of them to source files created at specified paths.
 #include <mysql.h>
 #include "seth_ql.h"
 
-using namespace seth_ql;
+int main() {
+   seth_ql::MySQLSession::init();
+   auto db_conn = seth_ql::createConnection( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
+   seth_ql::Query q( db_conn );
+   q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
 
-int main(){
-    MySQLSession::init();
-    auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
-    Query q( db_conn );
-    q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
+   /* Prepare an INSERT query with 3 parameters */
+   seth_ql::Statement stmt( db_conn, "INSERT INTO test_table(col1,col2,col3) VALUES(?,?,?)" );
 
-    /* Prepare an INSERT query with 3 parameters */
-    Statement stmt( db_conn, "INSERT INTO test_table(col1,col2,col3) VALUES(?,?,?)" );
+   /* Bind the data for all 3 parameters */
+   auto input = seth_ql::makeInputBindsArray( seth_ql::Bind<seth_ql::Field::INT>( "col1" ), 
+                                              seth_ql::Bind<seth_ql::Field::VARCHAR>( "col2", 50 ),
+                                              seth_ql::Bind<seth_ql::Field::SMALLINT>( "col3" ) );
+   /* Bind the buffers */
+   stmt.bind_param( input.getBinds() );
 
-    /* Bind the data for all 3 parameters */
-    auto input = makeInputBindsArray( Bind<Field::INT>( "col1" ), 
-                                      Bind<Field::VARCHAR>( "col2", 50 ), 
-				      Bind<Field::SMALLINT>( "col3" ) );
-    /* Bind the buffers */
-    stmt.bind_param( input.getBinds() );
+   /* Specify the data values for the first row */
+   input[ "col1" ] = 10;          /* integer */
+   input[ "col2" ] = "MySQL";     /* string  */
+   input[ "col3" ].isNull = true; /* INSERT SMALLINT data as NULL */
 
-    /* Specify the data values for the first row */
-    input[ "col1" ] = 10;          /* integer */
-    input[ "col2" ] = "MySQL";     /* string  */
-    input[ "col3" ].isNull = true; /* INSERT SMALLINT data as NULL */
+   /* Execute the INSERT statement - 1*/
+   stmt.execute();
 
-    /* Execute the INSERT statement - 1*/
-    stmt.execute();
+   /* Specify data values for second row, then re-execute the statement */
+   input[ "col1" ] = 1000;
+   input[ "col2" ] = "The most popular Open Source database ";
+   input[ "col3" ] = 1000;         /* smallint */
+   input[ "col3" ].isNull = false; /* reset */
 
-    /* Specify data values for second row, then re-execute the statement */
-    input[ "col1" ] = 1000;
-    input[ "col2" ] = "The most popular Open Source database ";
-    input[ "col3" ] = 1000;         /* smallint */
-    input[ "col3" ].isNull = false; /* reset */
+   /* Execute the INSERT statement - 2*/
+   stmt.execute();
 
-    /* Execute the INSERT statement - 2*/
-    stmt.execute();
-
-    /* RAII closes the statement, connection and session*/
-    return 0;
+   /* RAII closes the statement, connection and session*/
+   return 0;
 }
