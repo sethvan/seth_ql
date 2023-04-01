@@ -1,11 +1,15 @@
 # seth_ql
-My personal in progress C++ wrapper of the [MySQL C API](https://dev.mysql.com/doc/c-api/8.0/en/)
+My personal in progress C++ wrapper of the [MySQL C API](https://dev.mysql.com/doc/c-api/8.0/en/).  
+Currently the main feature is that it provides a wrapper for the [MYSQL_BIND](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-data-structures.html) structs used to make  
+[prepared statements](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-interface.html) and  [set query attributes](https://dev.mysql.com/doc/c-api/8.0/en/mysql-bind-param.html). Adding a few other wrappers as I go starting with  
+minimal functionality.
 
-## Current main feature
-Provides a wrapper for the [MYSQL_BIND](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-data-structures.html) structs used to make [prepared statements](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-interface.html) and  [set query attributes](https://dev.mysql.com/doc/c-api/8.0/en/mysql-bind-param.html).  
-Adding a few other wrappers as I go starting with minimal functionality.
+- [Dependencies and Requirements](#dependencies-and-requirements)
+- [Installation](#installation)
+- [Principal Classes and Functions](#principal-classes-and-functions)
+- [Prepared Statement Example](#prepared-statement-example)
 
-## Dependencies/Requirements
+## Dependencies and Requirements
 *  A MySQL-compatible server that implements the MySQL protocol
 *  Either [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) or [libmysqlclient](https://dev.mysql.com/downloads/c-api/)
 *  [CMake](https://cmake.org/download/) >= 3.21
@@ -119,36 +123,74 @@ Adding a few other wrappers as I go starting with minimal functionality.
    and you should be good to go.   
    
 ## Principal classes and functions
-```c++
-MySQLSession::init() /* RAII singleton that calls mysql_library_init() and destructor calls 
-    mysql_library_end().*/	
 
-Connection class /* Wraps a MYSQL* and can be included in parameters as a MYSQL* 
-    via Connection::operator MYSQL*().*/
+**_MySQLSession::init()_** 
+- RAII singleton that calls _mysql_library_init()_ and destructor calls _mysql_library_end()_.	
 
-createConnection() /* Wraps mysql_real_connect() and returns a Connection object. */
+**_Connection class_** 
+- Wraps a _MYSQL*_ and can be included in parameters as a _MYSQL*_ via _Connection::operator MYSQL*()_.
 
-Query class /* Wraps mysql_real_query(), as of this writing only executes. */
+**_createConnection()_:** 
+- Wraps _mysql_real_connect()_ and returns a _Connection_ object.
 
-Statement class /* Wraps MYSQL_STMT* and can be included in parameters as a MYSQL_STMT* via 
-    Statement::operator MYSQL_STMT*(). As of this writing wraps mysql_stmt_bind_param(), 
-    mysql_stmt_execute(), mysql_stmt_bind_result() and mysql_stmt_close(). */
+**_Query class_:** 
+- Wraps mysql_real_query(), as of this writing only executes.
+
+**_Statement class_:** 
+- Wraps _MYSQL_STMT*_ and can be included in parameters as a _MYSQL_STMT*_ via  
+    _Statement::operator MYSQL_STMT*()_.
+- As of this writing wraps _mysql_stmt_bind_param()_, _mysql_stmt_execute()_, _mysql_stmt_bind_result()_  
+    and _mysql_stmt_close()_.
                 
-BindsArray class /* Wraps MYSQL_BIND struct arrays used for making prepared statements. */
-
-makeInputBindsArray() /* Outputs a custom BindsArray to be used for the input parameter values
-    of a prepared statement. */
-
-makeOutputBindsArray() /* Outputs a custom BindsArray to be used for the rows in a prepared 
-    statements result set. */
-
-createDBTableBinds() /* Retrieves the data for all the tables in a specified database and 
-    writes separate BindsArray builder functions for each of them to source files created at 
-    specified paths. */
+**_BindsArray class_:** 
+- Wraps _MYSQL_BIND_ struct arrays used for making prepared statements.
+- The _SqlCType_ abstract class wraps these specific values of a _MYSQL BIND_ struct:
+```c++    
+    enum_field_types bufferType;
+    bool is_null;
+    bool error;
+    unsigned long length;
+    void* buffer;
+    unsigned long long bufferLength;
 ```
+- Depending on whether for an input or output of a prepared statement The BindsArray class  
+stores a polymorphic InputCtype or OutputCType array for the different params needed.
+- The BindsArray object:
+    - can set param values via overloaded operator= for all of the MySQL data types
+    - can select params via overloaded operator[] using name or index of param in BindsArray
+      ( i.e.,  
+      if you name first bind 'col1', inputBinds["col1"] is same param as inputBinds[0] )
+    - can set number type params using both number types or as a string so if inputBinds["col1"]  
+    is an INT, it can be set both this way:  
+    inputBinds["col1"] = 323;  
+    As well as this way:  
+    inputBinds["col1"] = "323";  
+    This is in case in case their values need to be parsed from strings.
+    - can set types stored as char arrays ( i.e. VARCHAR, JSON, LONGBLOB, etc ) using input  
+    values that are either const char*, char[] or constiguous char container classes.
+    - can be created with multiple params and then modified to bind only certain params when  
+    needed using setBinds() method.
+      
+**_enum class Field_**
+- enum class for MySQL data types. Contains the names like INT, VARCHAR, etc. 
+- Contains most MySQL Types. As far as I know only YEAR is currently missing but there may be others.
+- In addition have included values INT_UNSIGNED, TINYINT_UNSIGNED etc for unsigned integers.
+- Note: _using_ _enum_ _Field;_ will cause an error in MSVC due to ambiguation with _INT_, _DOUBLE_. etc.
+
+
+**_makeInputBindsArray()_** 
+- Outputs a custom BindsArray to be used for the input parameter values of a prepared statement.
+
+**_makeOutputBindsArray()_**
+- Outputs a custom BindsArray to be used for the rows in a prepared statements result set.
+
+**_createDBTableBinds()_** 
+- Retrieves the data for all the tables in a specified database and writes separate BindsArray builder  
+functions for each of them to source files created at specified paths.
 	
-#### 'INSERT INTO' prepared statement example taken from C API docs but done with seth_ql wrapper:
+## Prepared Statement Example 
 ```c++
+// taken from C API docs but done with seth_ql wrapper:
 #include <mysql.h>
 #include "seth_ql.h"
 
