@@ -10,6 +10,13 @@
 
 #include "seth_ql.h"
 
+/*
+    Example tests out using the BindsArray objects for prepared statements that input and output binary file
+    values. It takes 4 images from the photos/ directory ( located in the same example_code/ directory ),
+    inserts their data into a table and then retrieves the data for 2 of them to create copies of the images
+    in the current directory.
+*/
+
 using namespace seth_ql;
 
 // helper functions

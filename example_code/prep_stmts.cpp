@@ -10,6 +10,17 @@
 
 #include "seth_ql.h"
 
+/*
+      Example attempts to demonstrate how the BindsArray class:
+      - can be used in input (i.e., INSERT) as well as output (i.e., SELECT) prepared statements
+      - can set param values via overloaded operator= for all of the MySQL data types
+      - can select params via overloaded operator[] using name or index of param in BindsArray
+      - can set number type params using both number types or as a string(i.e., 3.14 as well as "3.14"
+          ... in case their values need to be parsed from strings).
+      - can set types stored as char arrays as either const char*, char arrays or constiguous char container classes
+      - can be modified to bind only certain params when needed
+*/
+
 using namespace seth_ql;
 
 // helper function
