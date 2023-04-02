@@ -4,11 +4,15 @@ Currently the main feature is that it provides a wrapper for the [MYSQL_BIND](ht
 [prepared statements](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-interface.html) and  [set query attributes](https://dev.mysql.com/doc/c-api/8.0/en/mysql-bind-param.html). Adding a few other wrappers as I go starting with  
 minimal functionality.
 
-- [Dependencies and Requirements](#dependencies-and-requirements)
-- [Installation](#installation)
-- [Principal Classes and Functions](#principal-classes-and-functions)
-- [Prepared Statement Example](#prepared-statement-example)
-- [GPL-3.0 license](../LICENSE)
+- [seth\_ql](#seth_ql)
+  - [Dependencies and Requirements](#dependencies-and-requirements)
+  - [Installation](#installation)
+      - [Building and Installing the Library](#building-and-installing-the-library)
+      - [Some things to note:](#some-things-to-note)
+      - [Building and Installing the Library](#building-and-installing-the-library-1)
+      - [Including the Library in a Project](#including-the-library-in-a-project)
+  - [Principal classes and functions](#principal-classes-and-functions)
+  - [Prepared Statement Example](#prepared-statement-example)
 
 ## Dependencies and Requirements
 *  A MySQL-compatible server that implements the MySQL protocol
@@ -30,11 +34,7 @@ minimal functionality.
    preset from the _CMakePresets.json_ file in project directory. Debug shared lib version example :  
    `$ cmake --preset debug-linux                                                            `  
    `$ cmake --build --preset debug-linux                                                    `  
-   
-   If CMake is unable to find _libmysqlclient.so_ or _mysql.h_ on your machine, then add   
-   your machine´s paths for them to the _PATHS_ at the end of the _find_library()_ and _find_path()_  
-   functions in the top-level directory´s _CMakeLists.txt_ file.  
-   
+      
    To install first _cd_ into the folder where your chosen preset built the library.  
    For the debug shared library version it would for example be in _build/debug-linux_.   
    `$ cd build/debug-linux                                                                  `  

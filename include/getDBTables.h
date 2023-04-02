@@ -1,5 +1,6 @@
 #ifndef INCLUDED_GETDBTABLES_H
 #define INCLUDED_GETDBTABLES_H
+
 #if __linux__
 #include <mysql/mysql.h>
 #else
