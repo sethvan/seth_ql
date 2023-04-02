@@ -9,14 +9,17 @@ if(WIN32)
     set(STATIC_LIB_REQUIRED on)
 endif()
 
-find_package(LIBMYSQL NAMES libmysql)
+find_package(LIBMYSQL)
 
 if(LIBMYSQL_FOUND)
     set(MYSQL_INCLUDE_DIR ${LIBMYSQL_INCLUDE_DIRS})
     set(MYSQL_LIBRARIES ${LIBMYSQL_LIBRARIES})
 else()
-    include(FindPkgConfig)
-    pkg_check_modules(LIBMYSQLCLIENT REQUIRED mysqlclient)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(mysqlclient
+                      REQUIRED IMPORTED_TARGET
+                      mysqlclient>=21.2)
+    add_library(LIBMYSQLCLIENT ALIAS PkgConfig::mysqlclient)
     link_directories(${LIBMYSQLCLIENT_LIBRARY_DIRS})
     set(MYSQL_INCLUDE_DIR ${LIBMYSQLCLIENT_INCLUDE_DIRS})
     set(MYSQL_LIBRARIES ${LIBMYSQLCLIENT_LIBRARIES})
