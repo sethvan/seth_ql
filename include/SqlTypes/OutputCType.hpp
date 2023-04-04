@@ -36,7 +36,8 @@ namespace seth_ql {
      public:
       OutImpl() = delete;
       OutImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
-          : OutputCType( _fieldName, ( Type == MYSQL_TYPE_BOOL ? MYSQL_TYPE_TINY : Type ),
+          : OutputCType( _fieldName,
+                         ( ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) ? MYSQL_TYPE_TINY : Type ),
                          ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ), _bufferLength ) {
          static_assert( is_approved_type<T>::value, "Value type given to InputCType is not an approved type" );
          if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
@@ -60,7 +61,7 @@ namespace seth_ql {
             }
          } else if constexpr ( Type == MYSQL_TYPE_TINY ) {
             os << static_cast<int>( value );
-         } else if constexpr ( Type == MYSQL_TYPE_BOOL ) {
+         } else if constexpr ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) {
             os << static_cast<bool>( value );
          } else if constexpr ( std::is_same_v<T, MYSQL_TIME> ) {
             std::ostringstream _os;

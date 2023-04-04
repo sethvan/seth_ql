@@ -251,8 +251,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::BOOLEAN> {
-      using inType = InImpl<signed char, MYSQL_TYPE_BOOL>;
-      using outType = OutImpl<signed char, MYSQL_TYPE_BOOL>;
+      using inType = InImpl<signed char, MYSQL_TYPE_BLOB>;
+      using outType = OutImpl<signed char, MYSQL_TYPE_BLOB>;
       constexpr static unsigned long max_buff_size = 0;
    };
    template <>

@@ -16,44 +16,41 @@
          }
       },
      {
-       "name": "debug-linux",
+       "name": "debug",
        "description": "Configure for Debug on Linux for shared library",
        "inherits": "linux-base",
        "cacheVariables": {
          "CMAKE_BUILD_TYPE": "Debug",        
          "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-         "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -ggdb3 -D_GLIBCXX_ASSERTIONS=1 -lasan -fsanitize=address"
+         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
+         "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -ggdb3 -D_GLIBCXX_ASSERTIONS=1 -lasan -fsanitize=address "
        }
      },
      {
-      "name": "release-linux",
+      "name": "release",
       "description": "Configure for Release on Linux for shared library",
       "inherits": "linux-base",
       "cacheVariables": {
          "CMAKE_BUILD_TYPE": "Release",
+         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
          "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -O3"         
        }
     },
     {
-      "name": "debug-linux-static",
+      "name": "debug-static",
       "description": "Configure for Debug on Linux for static library",
-      "inherits": "linux-base",
+      "inherits": "debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",        
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -ggdb3 -D_GLIBCXX_ASSERTIONS=1 -lasan -fsanitize=address",
         "STATIC_LIB_REQUIRED": "ON"
       }
     },
     {
-     "name": "release-linux-static",
+     "name": "release-static",
      "description": "Configure for Release on Linux for static library",
-     "inherits": "linux-base",
+     "inherits": "release",
      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -O3",
-        "STATIC_LIB_REQUIRED": "ON"         
-      }
+       "STATIC_LIB_REQUIRED": "ON"
+     }
    },
     {
       "name": "base",
@@ -111,20 +108,20 @@
    ],
    "buildPresets": [
 {  
-   "name": "debug-linux-static",
-   "configurePreset": "debug-linux-static"
+   "name": "debug",
+   "configurePreset": "debug"
 },
 {
-   "name": "release-linux-static",
-   "configurePreset": "release-linux-static"
+   "name": "release",
+   "configurePreset": "release"
 },
 {  
-   "name": "debug-linux",
-   "configurePreset": "debug-linux"
+   "name": "debug-static",
+   "configurePreset": "debug-static"
 },
 {
-   "name": "release-linux",
-   "configurePreset": "release-linux"
+   "name": "release-static",
+   "configurePreset": "release-static"
 },
 {  
    "name": "x64-debug",
