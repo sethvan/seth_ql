@@ -1,8 +1,4 @@
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include <iostream>
 #include <string>

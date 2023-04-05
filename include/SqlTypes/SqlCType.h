@@ -1,11 +1,7 @@
 #ifndef INCLUDED_SQLCTYPE_H
 #define INCLUDED_SQLCTYPE_H
 
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include <algorithm>
 #include <cstring>

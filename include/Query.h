@@ -1,11 +1,7 @@
 #ifndef INCLUDED_QUERY_H
 #define INCLUDED_QUERY_H
 
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include <string_view>
 

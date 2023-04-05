@@ -1,11 +1,7 @@
 #ifndef INCLUDED_UTILITIES_H
 #define INCLUDED_UTILITIES_H
 
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include <array>
 #include <string_view>

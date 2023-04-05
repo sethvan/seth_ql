@@ -1,11 +1,7 @@
 #ifndef INCLUDED_MYSQLSESSION_H
 #define INCLUDED_MYSQLSESSION_H
 
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include <string>
 

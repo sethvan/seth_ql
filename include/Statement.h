@@ -1,11 +1,7 @@
 #ifndef INCLUDED_STATEMENT_H
 #define INCLUDED_STATEMENT_H
 
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include <string_view>
 

@@ -1,10 +1,6 @@
 #include "Statement.h"
 
-#if __linux__
 #include <mysql/mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 #include "common.h"
 

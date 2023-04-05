@@ -23,7 +23,7 @@
          "CMAKE_BUILD_TYPE": "Debug",        
          "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
          "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
-         "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -ggdb3 -D_GLIBCXX_ASSERTIONS=1 -lasan -fsanitize=address "
+         "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -ggdb3 -D_GLIBCXX_ASSERTIONS=1"
        }
      },
      {
