@@ -10,6 +10,7 @@ minimal functionality.
   - [Installation](#installation)
   - [Principal classes and functions](#principal-classes-and-functions)
   - [Prepared Statement Example](#prepared-statement-example)
+  - [License](./license)
 
 ## Dependencies and Requirements
 
@@ -32,7 +33,7 @@ minimal functionality.
   - #### Building and Installing the Library
   
   If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets.  
-  I am including the [CMakePresets.json](../CMakePresets.json) as I am using them. Feel free to modify them as needed or replace them  
+  I am including the [CMakePresets.json](./CMakePresets.json) as I am using them. Feel free to modify them as needed or replace them  
   with your own. Currently mine are set up for a build that uses VCPKG. The build and config presets  
   share the same names of _debug_ and _release_ and they default output a shared library.  
   For obtaining a static library output, the presets of _debug-static_ and _release-static_ are also available.  
