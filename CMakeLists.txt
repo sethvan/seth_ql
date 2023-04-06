@@ -11,7 +11,7 @@ if(WIN32)
 else()
     find_package(libmysql)
     if(NOT libmysql_FOUND AND UNIX)
-        message("Did not find LIBMYSQL!")
+        message("-- LIBMYSQL not found, looking for PkgConfig to find LIBMYSQLCLIENT instead")
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(mysqlclient
                           REQUIRED IMPORTED_TARGET

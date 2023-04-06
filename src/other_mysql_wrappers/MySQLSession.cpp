@@ -21,9 +21,15 @@ namespace seth_ql {
       return session;
    }
 
-   Connection::Connection() {
+   Connection::Connection( const std::string& host, const std::string& user, const std::string& password,
+                           const std::string& database, unsigned int port, const std::string& unix_socket,
+                           unsigned long client_flag ) {
       if ( !( conn = mysql_init( nullptr ) ) ) {
          throw std::runtime_error( std::string( "Error: " ) + mysql_error( conn ) );
+      }
+      if ( !mysql_real_connect( conn, host.c_str(), user.c_str(), password.c_str(), database.c_str(), port,
+                                ( unix_socket.size() ? unix_socket.c_str() : nullptr ), client_flag ) ) {
+         failOut( "mysql_real_connect()", mysql_error( conn ) );
       }
    }
 
@@ -32,17 +38,6 @@ namespace seth_ql {
    }
 
    Connection::operator MYSQL*() {
-      return conn;
-   }
-
-   Connection createConnection( const std::string& host, const std::string& user, const std::string& password,
-                                const std::string& database, unsigned int port, const std::string& unix_socket,
-                                unsigned long client_flag ) {
-      Connection conn;
-      if ( !mysql_real_connect( conn, host.c_str(), user.c_str(), password.c_str(), database.c_str(), port,
-                                ( unix_socket.size() ? unix_socket.c_str() : nullptr ), client_flag ) ) {
-         failOut( "mysql_real_connect()", mysql_error( conn ) );
-      }
       return conn;
    }
 

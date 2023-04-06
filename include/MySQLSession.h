@@ -19,16 +19,18 @@ namespace seth_ql {
    };
 
    struct Connection {
-      MYSQL* conn;
-      Connection();
+      MYSQL* conn = nullptr;
+      Connection( const std::string& host, const std::string& user, const std::string& password,
+                  const std::string& database, unsigned int port, const std::string& unix_socket,
+                  unsigned long client_flag );
       ~Connection();
+      Connection( const Connection& ) = delete;
+      Connection& operator=( const Connection& ) = delete;
+      Connection( Connection&& rhs ) = delete;
+      Connection& operator=( Connection&& rhs ) = delete;
+
       operator MYSQL*();
    };
-
-   [[nodiscard]] Connection createConnection( const std::string& host, const std::string& user,
-                                              const std::string& password, const std::string& database,
-                                              unsigned int port, const std::string& unix_socket,
-                                              unsigned long client_flag );
 
 }  // namespace seth_ql
 
