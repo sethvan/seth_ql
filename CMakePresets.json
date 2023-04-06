@@ -12,7 +12,8 @@
            "rhs": "Linux"
          },
          "cacheVariables": {
-            "CMAKE_CXX_COMPILER": "g++"
+            "CMAKE_CXX_COMPILER": "g++",
+            "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
          }
       },
      {
@@ -31,7 +32,6 @@
       "inherits": "linux-base",
       "cacheVariables": {
          "CMAKE_BUILD_TYPE": "Release",
-         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
          "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Wpedantic -O3"         
        }
     },

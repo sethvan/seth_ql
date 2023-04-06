@@ -7,11 +7,10 @@ set(CMAKE_CXX_EXTENSIONS off)
 
 if(WIN32)
     set(STATIC_LIB_REQUIRED on)
-    find_package(LIBMYSQL REQUIRED)
 else()
-    find_package(libmysql)
-    if(NOT libmysql_FOUND AND UNIX)
-        message("-- LIBMYSQL not found, looking for PkgConfig to find LIBMYSQLCLIENT instead")
+    find_package(libmysql NAMES libmysql libmysqlclient)
+    if(NOT libmysql_FOUND)
+        message("-- Packages not found, looking for PkgConfig to find libmysqlclient instead")
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(mysqlclient
                           REQUIRED IMPORTED_TARGET

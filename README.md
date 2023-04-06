@@ -8,73 +8,65 @@ minimal functionality.
 - [seth\_ql](#seth_ql)
   - [Dependencies and Requirements](#dependencies-and-requirements)
   - [Installation](#installation)
-      - [Building and Installing the Library](#building-and-installing-the-library)
-      - [Some things to note:](#some-things-to-note)
-      - [Building and Installing the Library](#building-and-installing-the-library-1)
-      - [Including the Library in a Project](#including-the-library-in-a-project)
   - [Principal classes and functions](#principal-classes-and-functions)
   - [Prepared Statement Example](#prepared-statement-example)
 
 ## Dependencies and Requirements
-*  A MySQL-compatible server that implements the MySQL protocol
-*  Either [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) or [libmysqlclient](https://dev.mysql.com/downloads/c-api/)
-*  [CMake](https://cmake.org/download/) >= 3.21
-*  C++ standard >= 17
-*  gcc >= 10 (unsure as of yet about clang or MSVC)
-*  
+
+- A MySQL-compatible server that implements the MySQL protocol
+- Either [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) or [libmysqlclient](https://dev.mysql.com/downloads/c-api/)
+
+   If you require a debug binary for the mysql client, as of yet I have only been able to find it  
+   provided by [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) unless you build a debug binary from source on your own. On my personal  
+   linux distro of Fedora36 I had to use [VCPKG](https://github.com/microsoft/vcpkg) to obtain [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download).  I see a package for LIBMYSQLCLIENT  
+   listed in [Conan](https://conan.io/) but do not know whether it contains debug binaries.
+- [PkgConfig](https://www.freedesktop.org/wiki/Software/pkg-config/) may be required if not using [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/)
+- [CMake](https://cmake.org/download/) >= 3.21
+- C++ standard >= 17
+- gcc >= 10 (unsure as of yet about clang or MSVC)
+
 ## Installation
-* ### Linux
 
-   #### Building and Installing the Library
-   ---
+- ### Linux
 
-   _cd_ into the directory where you wish to place project and clone repo:  
-   `$ git clone https://github.com/sethvan/seth_ql.git                                      `  
+  - #### Building and Installing the Library
+  
+  If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets.  
+  I am including the presets as I am using them. Feel free to modify them as needed or replace them  
+  with your own. Currently mine are set up for a build that uses VCPKG. The build and config presets  
+  share the same names of _debug_ and _release_ and they default output a shared library.  
+  For obtaining a static library output, the presets of _debug-static_ and _release-static_ are also available.  
+ 
+  To install first _cd_ into the folder where your chosen preset built the library.  
+  For the release shared library version it would for example be in _build/release_.   
+  `$ cd build/release                                                                  `  
    
-   Select and build either Debug or Release for shared or static libraries using the corresponding  
-   preset from the _CMakePresets.json_ file in project directory. Debug shared lib version example :  
-   `$ cmake --preset debug-linux                                                            `  
-   `$ cmake --build --preset debug-linux                                                    `  
-      
-   To install first _cd_ into the folder where your chosen preset built the library.  
-   For the debug shared library version it would for example be in _build/debug-linux_.   
-   `$ cd build/debug-linux                                                                  `  
+  Install using CMake install command. Default path for install on linux is _/usr/local/_,  
+  if you want it installed to a different path run command as so:  
+  `$ cmake --install . --prefix /path/to/custom/prefix                                     `  
+  Otherwise install to default path:  
+  `$ cmake --install .                                                                     `
    
-   Install using CMake install command. Default path for install on linux is _/usr/local/_,  
-   if you want it installed to a different path run command as so:  
-   `$ cmake --install . --prefix /path/to/custom/prefix                                     `  
-   Otherwise install to default path:  
-   `$ cmake --install .                                                                     `
+  Ensure that the paths to the different include directories for _seth_ql.h_ and _mysql.h_can be  
+  found in your system´s **CPLUS_INCLUDE_PATH** variable. Otherwise add the following line to  
+  your _~/.bashrc_ for the missing path:  
+  `export CPLUS_INCLUDE_PATH=/path/to/include:$CPLUS_INCLUDE_PATH                          `  
    
-   Ensure that the paths to the different include directories for _seth_ql.h_ and _mysql.h_can be  
-   found in your system´s **CPLUS_INCLUDE_PATH** variable. Otherwise add the following line to  
-   your _~/.bashrc_ for the missing path:  
-   `export CPLUS_INCLUDE_PATH=/path/to/include:$CPLUS_INCLUDE_PATH                          `  
+  As well ensure that the paths to the different lib directories for _seth_ql.so_ and _libmysqlclient.so_  
+  can be found in your system´s **LD_LIBRARY_PATH** variable. Otherwise add the following line to  
+  your _~/.bashrc_ for the missing path:  
+  `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    ` 
    
-   As well ensure that the paths to the different lib directories for _seth_ql.so_ and _libmysqlclient.so_  
-   can be found in your system´s **LD_LIBRARY_PATH** variable. Otherwise add the following line to  
-   your _~/.bashrc_ for the missing path:  
-   `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    ` 
-   
-   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
-   and you should be good to go.
+  Now just include _<mysql/mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
+  and you should be good to go.
 
-* ### Windows using Visual Studio Community 2022
-   
-   #### Some things to note:
-   ---
+- ### Windows using Visual Studio Community 2022
+  
+   - #### Building and Installing the Library
    
    In windows at present just including presets for generating a static library version of library.  
-   
-   From my as of yet limited experience with Visual Studio, it appears that it is necessary for all  
-   libraries linked in a project to be of a Debug build for there to be a Debug build built from the  
-   project. Since _libmysql.lib_ and _mysqlclient.lib_ are not debug builds, it would be necessary for  
-   you to build Debug builds of whichever one of them you are using from source and chose it for  
-   linking to your project´s Debug build. The following instructions are for the Release version.
-   
-   #### Building and Installing the Library
-   ---
-   
+   You may modify this if desired by setting _STATIC_LIB_REQUIRED_ to _OFF_ for a shared library instead.  
+     
    After the library is built it is your option to run the install command that would place it in your  
    programs folder. It is not necessary to do so in order to use the library but if you wish to do  
    so then you must open Visual Studio as an administrator. It is up to you.
@@ -83,19 +75,14 @@ minimal functionality.
    In _Repository location_ paste 'https://github.com/sethvan/seth_ql' and click _çlone_.  
    In the _Solution Explorer_ right click on _Folder View_ and click _Open_.  
    CMake generation will occur in output terminal every time it detects a config selection.  
-   Make sure a release config version is selected before you build.  
-   Select the desired config ( _x64-release_ or _x86-release_ ) from the dropdown.  
+   Make sure the desired config version is selected before you build.  
+   Select the desired config (i.e., _x64-release_ etc ) from the dropdown.  
    Click _Build_ and then _Build_ _All_.
-   
-   If CMake is unable to find the mysql library ( neither _libmysql.lib_ nor _mysqlclient.lib_ ) or _mysql.h_  
-   on your machine, then add your machine´s paths for them to the _PATHS_ at the end of the  
-   _find_library()_ and _find_path()_ functions in the top-level directory´s _CMakeLists.txt_ file.
-     
+        
    After it´s built, you may install if you wish at this point by clicking _Build_ then _Install_ _seth_ql_.  
    If installed, make a note of where it was installed and close seth_ql folder in IDE.
    
-   #### Including the Library in a Project
-   ---
+   - #### Including the Library in a Project
    
    Open the solution where you want to use/include _seth_ql_.  
    In the _Solution_ _Explorer_ right click on the solution folder and click _Properties_.  
@@ -121,7 +108,7 @@ minimal functionality.
    _"C:\Program Files\MySQL\MySQL Server 8.0\include"_  
    Save changes.
    
-   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
+   Now just include _<mysql/mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
    and you should be good to go.   
    
 ## Principal classes and functions
@@ -132,19 +119,16 @@ minimal functionality.
 **_Connection class_** 
 - Wraps a _MYSQL*_ and can be included in parameters as a _MYSQL*_ via _Connection::operator MYSQL*()_.
 
-**_createConnection()_:** 
-- Wraps _mysql_real_connect()_ and returns a _Connection_ object.
-
-**_Query class_:** 
+**_Query class_** 
 - Wraps mysql_real_query(), as of this writing only executes.
 
-**_Statement class_:** 
+**_Statement class_** 
 - Wraps _MYSQL_STMT*_ and can be included in parameters as a _MYSQL_STMT*_ via  
     _Statement::operator MYSQL_STMT*()_.
 - As of this writing wraps _mysql_stmt_bind_param()_, _mysql_stmt_execute()_, _mysql_stmt_bind_result()_  
     and _mysql_stmt_close()_.
                 
-**_BindsArray class_:** 
+**_BindsArray class_** 
 - Wraps _MYSQL_BIND_ struct arrays used for making prepared statements.
 - The _SqlCType_ abstract class wraps these specific values of a _MYSQL BIND_ struct:
 ```c++    
