@@ -32,11 +32,19 @@ minimal functionality.
 
   - #### Building and Installing the Library
   
-  If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets.  
-  I am including the [CMakePresets.json](./CMakePresets.json) as I am using them. Feel free to modify them as needed or replace them  
-  with your own. Currently mine are set up for a build that uses VCPKG. The build and config presets  
-  share the same names of _debug_ and _release_ and they default output a shared library.  
-  For obtaining a static library output, the presets of _debug-static_ and _release-static_ are also available.  
+  If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets. I am including  
+  a simple [CMakePresets.json](./CMakePresets.json). Feel free to modify it as needed or replace it with your own.  
+  If you are using a package manager like [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/) then add the appropriate  
+  path for CMAKE_TOOLCHAIN_FILE_, example:
+  ```
+   "cacheVariables": {
+      "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+   }
+   ```
+
+  The build and config presets provided share the same names of _debug_ and _release_ and they default  
+  output a shared library. For obtaining a static library output, the presets of _debug-static_ and  
+  _release-static_ are also available.  
  
   After building, To install first _cd_ into the folder where your chosen preset built the library.  
   For the release shared library version it would for example be in _build/release_.   
