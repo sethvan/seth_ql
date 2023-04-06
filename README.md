@@ -18,10 +18,10 @@ minimal functionality.
 - Either [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) or [libmysqlclient](https://dev.mysql.com/downloads/c-api/)
 
    If you require a debug binary for the mysql client, as of yet I have only been able to find it  
-   provided by [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) unless you build a debug binary from source on your own. On my personal  
-   linux distro of Fedora36 I had to use [VCPKG](https://github.com/microsoft/vcpkg) to obtain [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download).  I see a package for LIBMYSQLCLIENT  
+   provided by [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) unless you build a debug binary from source on your own. On my   
+   linux distro I had to use [VCPKG](https://github.com/microsoft/vcpkg) to obtain [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download).  I see a package for LIBMYSQLCLIENT  
    listed in [Conan](https://conan.io/) but do not know whether it contains debug binaries.
-- [PkgConfig](https://www.freedesktop.org/wiki/Software/pkg-config/) required if not using [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/)
+- [PkgConfig](https://www.freedesktop.org/wiki/Software/pkg-config/) required on Linux if not using [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/)
 - [CMake](https://cmake.org/download/) >= 3.21
 - C++ standard >= 17
 - gcc >= 10 (unsure as of yet about clang or MSVC)
