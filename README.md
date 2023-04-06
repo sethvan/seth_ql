@@ -10,7 +10,7 @@ minimal functionality.
   - [Installation](#installation)
   - [Principal classes and functions](#principal-classes-and-functions)
   - [Prepared Statement Example](#prepared-statement-example)
-  - [License](./license)
+  - [License](./License)
 
 ## Dependencies and Requirements
 
