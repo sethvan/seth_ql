@@ -20,7 +20,7 @@ minimal functionality.
    provided by [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download) unless you build a debug binary from source on your own. On my personal  
    linux distro of Fedora36 I had to use [VCPKG](https://github.com/microsoft/vcpkg) to obtain [libmysql](https://dev.mysql.com/doc/refman/8.0/en/faqs-c-api.html#faq-mysql-c-api-download).  I see a package for LIBMYSQLCLIENT  
    listed in [Conan](https://conan.io/) but do not know whether it contains debug binaries.
-- [PkgConfig](https://www.freedesktop.org/wiki/Software/pkg-config/) may be required if not using [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/)
+- [PkgConfig](https://www.freedesktop.org/wiki/Software/pkg-config/) required if not using [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/)
 - [CMake](https://cmake.org/download/) >= 3.21
 - C++ standard >= 17
 - gcc >= 10 (unsure as of yet about clang or MSVC)
@@ -32,12 +32,12 @@ minimal functionality.
   - #### Building and Installing the Library
   
   If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets.  
-  I am including the presets as I am using them. Feel free to modify them as needed or replace them  
+  I am including the [CMakePresets.json](../CMakePresets.json) as I am using them. Feel free to modify them as needed or replace them  
   with your own. Currently mine are set up for a build that uses VCPKG. The build and config presets  
   share the same names of _debug_ and _release_ and they default output a shared library.  
   For obtaining a static library output, the presets of _debug-static_ and _release-static_ are also available.  
  
-  To install first _cd_ into the folder where your chosen preset built the library.  
+  After building, To install first _cd_ into the folder where your chosen preset built the library.  
   For the release shared library version it would for example be in _build/release_.   
   `$ cd build/release                                                                  `  
    
@@ -182,7 +182,7 @@ functions for each of them to source files created at specified paths.
 
 int main() {
    seth_ql::MySQLSession::init();
-   auto db_conn = seth_ql::createConnection( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
+   seth_ql::Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
    seth_ql::Query q( db_conn );
    q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
 
