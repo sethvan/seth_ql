@@ -22,7 +22,7 @@ void write_binary_file( const std::string& filename, const std::basic_string<uns
 int main() {
    try {
       MySQLSession::init();
-      auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
+      Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
       Query q( db_conn );
       q.execute( "DROP TABLE IF EXISTS image_table" );
       q.execute( "CREATE TABLE image_table(name VARCHAR(50) NOT NULL PRIMARY KEY, image MEDIUMBLOB NOT NULL)" );

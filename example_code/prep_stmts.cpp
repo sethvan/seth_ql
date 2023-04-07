@@ -25,7 +25,7 @@ void displayResult( MYSQL_STMT* stmt, const BindsArray<OutputCType>& output, int
 int main() {
    try {
       MySQLSession::init();
-      auto db_conn = createConnection( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
+      Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
       Query q( db_conn );
       q.execute( "DROP TABLE IF EXISTS test_table" );
       q.execute(
