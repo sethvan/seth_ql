@@ -28,54 +28,58 @@ minimal functionality.
 
 ## Installation
 
-- ### Linux
-
-  - #### Building and Installing the Library
+- ### Using CMake Presets
   
-  If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets. I am including  
-  a simple [CMakePresets.json](./CMakePresets.json). Feel free to modify it as needed or replace it with your own.  
-  If you are using a package manager like [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/) then add the appropriate  
-  path for CMAKE_TOOLCHAIN_FILE_, example:
+  If needed, here is [Documentation](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html?highlight=presets) and [Video](https://www.youtube.com/watch?v=NFbnm1t6Mc4&t=553s) for using CMake presets. I am including a simple  
+  [CMakePresets.json](./CMakePresets.json). The windows presets are minimal and the Linux ones mostly just set a few  
+  flags. Modify or replace with your own as needed. If you are using a package manager like  
+  [VCPKG](https://github.com/microsoft/vcpkg) or [Conan](https://conan.io/) then add the appropriate path for  _CMAKE_TOOLCHAIN_FILE_, example:
   ```
    "cacheVariables": {
       "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
    }
    ```
+- ### Linux
 
-  The build and config presets provided share the same names of _debug_ and _release_ and they default  
+  The build and config presets provided share the same names of _debug_ and _release_and they default  
   output a shared library. For obtaining a static library output, the presets of _debug-static_ and  
   _release-static_ are also available.  
  
   After building, To install first _cd_ into the folder where your chosen preset built the library.  
   For the release shared library version it would for example be in _build/release_.   
-  `$ cd build/release                                                                  `  
-   
+  ``` 
+  $ cd build/release                                                                      
+  ```  
   Install using CMake install command. Default path for install on linux is _/usr/local/_,  
   if you want it installed to a different path run command as so:  
-  `$ cmake --install . --prefix /path/to/custom/prefix                                     `  
+  ```
+  $ cmake --install . --prefix /path/to/custom/prefix
+  ```  
   Otherwise install to default path:  
-  `$ cmake --install .                                                                     `
-   
+  ```
+  $ cmake --install .
+  ```   
   Ensure that the paths to the different include directories for _seth_ql.h_ and _mysql.h_can be  
   found in your system´s **CPLUS_INCLUDE_PATH** variable. Otherwise add the following line to  
   your _~/.bashrc_ for the missing path:  
-  `export CPLUS_INCLUDE_PATH=/path/to/include:$CPLUS_INCLUDE_PATH                          `  
-   
+  ```
+  export CPLUS_INCLUDE_PATH=/path/to/include:$CPLUS_INCLUDE_PATH
+  ```
   As well ensure that the paths to the different lib directories for _seth_ql.so_ and _libmysqlclient.so_  
   can be found in your system´s **LD_LIBRARY_PATH** variable. Otherwise add the following line to  
   your _~/.bashrc_ for the missing path:  
-  `export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH                                    ` 
-   
+  ```
+  export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH
+  ```   
   Now just include _<mysql/mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
-  and you should be good to go.
+  and you should be good to go. On the off hand that _<mysql/mysql.h>_ does not work, _<mysql.h>_ should.
 
 - ### Windows using Visual Studio Community 2022
   
    - #### Building and Installing the Library
    
    In windows at present just including presets for generating a static library version of library.  
-   You may modify this if desired by setting _STATIC_LIB_REQUIRED_ to _OFF_ for a shared library instead.  
-     
+        
    After the library is built it is your option to run the install command that would place it in your  
    programs folder. It is not necessary to do so in order to use the library but if you wish to do  
    so then you must open Visual Studio as an administrator. It is up to you.
@@ -91,7 +95,7 @@ minimal functionality.
    After it´s built, you may install if you wish at this point by clicking _Build_ then _Install_ _seth_ql_.  
    If installed, make a note of where it was installed and close seth_ql folder in IDE.
    
-   - #### Including the Library in a Project
+   - #### Including the Library in a non-CMake Visual Studio Project
    
    Open the solution where you want to use/include _seth_ql_.  
    In the _Solution_ _Explorer_ right click on the solution folder and click _Properties_.  
@@ -105,20 +109,19 @@ minimal functionality.
    _"C:\Program Files\MySQL\MySQL Server 8.0\include"_  
    
    In _Configuration_ _Properties_ _>_ _Linker_ _>_ _Input_ _>_ _Additional_ _Dependencies_:  
-   Add _seth_ql.lib_ and ( depending on which you are using ) _libmysql.lib_ or _mysqlclient.lib_ .  
+   Add _seth_ql.lib_.  
    
    In _Configuration_ _Properties_ _>_ _Linker_ _>_ _General_ _>_ _Additional_ _Library_ _Directories_:  
-   Add the paths to the directory where _seth_ql.lib_ is and the one where your MySQL library is.  
+   Add the paths to the directory where _seth_ql.lib_ is.  
    
    If you installed the library, the lib directory for _seth_ql_ will be in the same directory as it´s  
    include directory. If not then it will be the path to the specific build´s folder inside of the  
    _seth_ql_ repo´s _out/build_ folder ( i.e., _out/build/x64-release_ ).  
-   The path for your MySQL library you will have to find. On my machine it is this:  
-   _"C:\Program Files\MySQL\MySQL Server 8.0\include"_  
    Save changes.
    
-   Now just include _<mysql/mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
-   and you should be good to go.   
+   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
+   and you should be good to go. If using includes from a package manager the path may be _<mysql/mysql.h>_ that  
+   needs to be included.
    
 ## Principal classes and functions
 
