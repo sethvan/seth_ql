@@ -41,9 +41,9 @@ minimal functionality.
    ```
 - ### Linux
 
-  The build and config presets provided share the same names of _debug_ and _release_and they default  
-  output a shared library. For obtaining a static library output, the presets of _debug-static_ and  
-  _release-static_ are also available.  
+  The build and config presets provided share the same names of _debug_ and _release_ and  
+  they default output a shared library. For obtaining a static library output, the presets  
+  of _debug-static_ and  _release-static_ are also available.  
  
   After building, To install first _cd_ into the folder where your chosen preset built the library.  
   For the release shared library version it would for example be in _build/release_.   
@@ -71,8 +71,9 @@ minimal functionality.
   ```
   export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH
   ```   
-  Now just include _<mysql/mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
-  and you should be good to go. On the off hand that _<mysql/mysql.h>_ does not work, _<mysql.h>_ should.
+  Now just include _<mysql/mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the  
+  library and you should be good to go. Depending on how you installed the MySQL client library,  
+  include may need to appear as _<mysql.h>_.
 
 - ### Windows using Visual Studio Community 2022
   
@@ -119,9 +120,9 @@ minimal functionality.
    _seth_ql_ repo´s _out/build_ folder ( i.e., _out/build/x64-release_ ).  
    Save changes.
    
-   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the library  
-   and you should be good to go. If using includes from a package manager the path may be _<mysql/mysql.h>_ that  
-   needs to be included.
+   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the  
+   library and you should be good to go. Depending on how you installed the MySQL client library,  
+   include may need to appear as _<mysql/mysql.h>_.
    
 ## Principal classes and functions
 
