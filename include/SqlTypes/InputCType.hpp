@@ -12,9 +12,9 @@ namespace seth_ql {
 
    class InputCType : public SqlCType {
      public:
-      InputCType( std::string_view _fieldName, enum_field_types type, void* _buffer,
-                  unsigned long long _bufferLength = 0 )
-          : SqlCType( _fieldName, type, _buffer, _bufferLength ) {}
+      InputCType( std::string_view _fieldName, enum_field_types type, void* _buffer, unsigned long long _bufferLength,
+                  bool isUnsigned )
+          : SqlCType( _fieldName, type, _buffer, _bufferLength, isUnsigned ) {}
       virtual ~InputCType() = default;
       InputCType& operator=( const InputCType& ) = delete;
       virtual void operator=( long double newValue ) = 0;
@@ -23,7 +23,8 @@ namespace seth_ql {
       virtual void operator=( const MYSQL_TIME& newValue ) = 0;
 
       template <Field Type>
-      std::enable_if_t<(!ValType<Type>::is_char_array || !std::is_same_v<typename ValType<Type>::type, unsigned char>),
+      std::enable_if_t<( !ValType<Type>::is_char_array ||
+                         !std::is_same_v<typename ValType<Type>::type, char> /*For struct ValType<Field::DECIMAL>*/ ),
                        typename ValType<Type>::type&>
       Value() {
          return *static_cast<typename ValType<Type>::type*>( buffer );
@@ -31,7 +32,7 @@ namespace seth_ql {
 
       template <Field Type>
       std::enable_if_t<ValType<Type>::is_char_array, std::string> Value() {
-         unsigned char* ptr = static_cast<unsigned char*>( buffer );
+         char* ptr = static_cast<char*>( buffer );
          std::string str( ptr, ptr + length );
          return str;
       }
@@ -47,9 +48,10 @@ namespace seth_ql {
      public:
       InImpl() = delete;
       InImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
-          : InputCType( _fieldName,
-                        ( ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) ? MYSQL_TYPE_TINY : Type ),
-                        ( std::is_same_v<T, std::string> ? nullptr : &value ), _bufferLength ) {
+          : InputCType(
+                _fieldName, ( ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) ? MYSQL_TYPE_TINY : Type /*Jury rig put in due to not all versions of headers for library contain placeholder MYSQL_TYPE_BOOL */ ),
+                ( std::is_same_v<T, std::string> ? nullptr : &value ), _bufferLength,
+                ( std::is_unsigned<T>::value ? true : false ) ) {
          static_assert( is_approved_type<T>::value, "Value type given to InputCType is not an approved type" );
          if constexpr ( std::is_same_v<T, std::string> ) {
             value.resize( _bufferLength, '\0' );
@@ -73,24 +75,7 @@ namespace seth_ql {
             throw std::runtime_error( mismatch );
          }
       }
-      // void operator=( const std::string_view newValue ) override {
-      //    if ( !newValue.length() ) {
-      //       isNull = true;
-      //       return;
-      //    }
-      //    if constexpr ( std::is_same_v<T, std::string> ) {
-      //       std::copy( newValue.begin(), newValue.end(), value.begin() );
-      //       length = newValue.size();
-      //    } else if constexpr ( std::is_integral_v<T> ) {
-      //       value = std::stol( std::string( newValue ) );
-      //    } else if constexpr ( std::is_same_v<T, float> ) {
-      //       value = std::stof( std::string( newValue ) );
-      //    } else if constexpr ( std::is_same_v<T, double> ) {
-      //       value = std::stod( std::string( newValue ) );
-      //    } else {
-      //       throw std::runtime_error( mismatch );
-      //    }
-      // }
+
       void operator=( CharArrView newValue ) override {
          if ( !newValue.size() ) {
             isNull = true;

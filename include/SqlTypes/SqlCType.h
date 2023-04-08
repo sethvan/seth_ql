@@ -17,8 +17,8 @@
 
 /*
     This is the base class meant to be used in a wrapper for MYSQL_BIND arrays found in
-   BindsArray.hpp. A concept, an enum and some type traits all related to MySQL and C type
-   information are placed here as well.
+   BindsArray.hpp. An enum and some type traits all related to MySQL and C type information are
+   placed here as well.
 
    There are 8 C types and 1 MYSQL type used (char, short, int, long long, float, double, MYSQL_TIME
    and char[]). However in the case of char[], various enum_field_types that are valid for receiving
@@ -40,9 +40,10 @@ namespace seth_ql {
       void* buffer;
       unsigned long long bufferLength;
       bool is_selected;
+      bool isUnsigned;
 
-      SqlCType( std::string_view _fieldName, enum_field_types type, void* _buffer,
-                unsigned long long _bufferLength = 0 )
+      SqlCType( std::string_view _fieldName, enum_field_types type, void* _buffer, unsigned long long _bufferLength,
+                bool _isUnsigned )
           : fieldName( _fieldName ),
             bufferType( type ),
             isNull( 0 ),
@@ -51,7 +52,8 @@ namespace seth_ql {
             bind( nullptr ),
             buffer( _buffer ),
             bufferLength( _bufferLength ),
-            is_selected( true ) {}
+            is_selected( true ),
+            isUnsigned( _isUnsigned ) {}
 
       void setBind( MYSQL_BIND* targetBind ) {
          bind = targetBind;
@@ -62,6 +64,7 @@ namespace seth_ql {
          bind->length = &length;
          bind->error = &error;
          bind->buffer_length = bufferLength;
+         bind->is_unsigned = isUnsigned;
       }
 
       virtual ~SqlCType() = default;
@@ -77,7 +80,7 @@ namespace seth_ql {
    template <>
    struct is_approved_type<signed char> : std::true_type {};
    template <>
-   struct is_approved_type<unsigned char> : std::true_type {};
+   struct is_approved_type<char> : std::true_type {};
    template <>
    struct is_approved_type<short> : std::true_type {};
    template <>
@@ -99,6 +102,7 @@ namespace seth_ql {
    template <>
    struct is_approved_type<MYSQL_TIME> : std::true_type {};
 
+   /*Commened out code from when ran using C++20*/
    // template <typename T>
    // concept ApprovedType = is_approved_type<T>::value;
 
@@ -158,47 +162,47 @@ namespace seth_ql {
    template <>
    struct ValType<Field::CHAR> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::VARCHAR> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::TINYTEXT> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::TEXT> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::BLOB> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::MEDIUMTEXT> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::MEDIUMBLOB> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::LONGTEXT> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::LONGBLOB> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::TINYINT> {
@@ -268,12 +272,12 @@ namespace seth_ql {
    template <>
    struct ValType<Field::ENUM> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::SET> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::BOOLEAN> {
@@ -288,27 +292,27 @@ namespace seth_ql {
    template <>
    struct ValType<Field::GEOMETRY> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::JSON> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::BINARY> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::VARBINARY> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
    template <>
    struct ValType<Field::TINYBLOB> {
       static constexpr bool is_char_array = true;
-      using type = unsigned char;
+      using type = char;
    };
 
 }  // namespace seth_ql

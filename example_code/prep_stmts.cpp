@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "seth_ql.h"
 
@@ -63,7 +64,7 @@ int main() {
       tableIn[ "role" ] = "CFO";
       stmt2.execute();
 
-      char arr[ 20 ] = { 'L', 'y', 'n', ' ', 'Q', 'w', 'a', 'n', '\0' };
+      std::vector<char> arr = { 'L', 'y', 'n', ' ', 'Q', 'w', 'a', 'n' };
       tableIn[ 0 ] = "105";
       tableIn[ 1 ] = arr;
       tableIn[ 2 ] = "Sales Strategist";
