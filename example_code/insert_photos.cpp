@@ -16,8 +16,8 @@
 using namespace seth_ql;
 
 // helper functions
-std::basic_string<unsigned char> get_binary_file_data( const std::string& filename );
-void write_binary_file( const std::string& filename, const std::basic_string<unsigned char>& buffer );
+std::string get_binary_file_data( const std::string& filename );
+void write_binary_file( const std::string& filename, const std::string& buffer );
 
 int main() {
    try {
@@ -74,7 +74,7 @@ int main() {
    return 0;
 }
 
-std::basic_string<unsigned char> get_binary_file_data( const std::string& filename ) {
+std::string get_binary_file_data( const std::string& filename ) {
    std::ifstream file( filename, std::ios::binary | std::ios::ate );
    if ( !file ) {
       std::cerr << "Error: Could not open file " << filename << std::endl;
@@ -84,7 +84,7 @@ std::basic_string<unsigned char> get_binary_file_data( const std::string& filena
    const std::streamsize size = file.tellg();
    file.seekg( 0, std::ios::beg );
 
-   std::basic_string<unsigned char> buffer( size, 0 );
+   std::string buffer( size, 0 );
    if ( !file.read( reinterpret_cast<char*>( buffer.data() ), size ) ) {
       std::cerr << "Error: Could not read file " << filename << std::endl;
       failOut( "get_binary_file_data()", "" );
@@ -93,7 +93,7 @@ std::basic_string<unsigned char> get_binary_file_data( const std::string& filena
    return buffer;
 }
 
-void write_binary_file( const std::string& filename, const std::basic_string<unsigned char>& buffer ) {
+void write_binary_file( const std::string& filename, const std::string& buffer ) {
    std::ofstream file( filename, std::ios::binary );
    if ( !file ) {
       std::cerr << "Error: Could not open file " << filename << std::endl;

@@ -13,7 +13,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "Span.hpp"
 #include "utilities.h"
 
 /*
@@ -96,7 +95,7 @@ namespace seth_ql {
    template <>
    struct is_approved_type<double> : std::true_type {};
    template <>
-   struct is_approved_type<std::basic_string<unsigned char>> : std::true_type {};
+   struct is_approved_type<std::string> : std::true_type {};
    template <>
    struct is_approved_type<MYSQL_TIME> : std::true_type {};
 

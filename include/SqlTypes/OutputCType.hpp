@@ -22,9 +22,9 @@ namespace seth_ql {
       }
 
       template <Field Type>
-      std::enable_if_t<ValType<Type>::is_char_array, const std::basic_string<unsigned char>> Value() {
+      std::enable_if_t<ValType<Type>::is_char_array, const std::string> Value() {
          unsigned char* ptr = static_cast<unsigned char*>( buffer );
-         std::basic_string<unsigned char> str( ptr, ptr + length );
+         std::string str( ptr, ptr + length );
          return str;
       }
    };
@@ -38,9 +38,9 @@ namespace seth_ql {
       OutImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
           : OutputCType( _fieldName,
                          ( ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) ? MYSQL_TYPE_TINY : Type ),
-                         ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ), _bufferLength ) {
+                         ( std::is_same_v<T, std::string> ? nullptr : &value ), _bufferLength ) {
          static_assert( is_approved_type<T>::value, "Value type given to InputCType is not an approved type" );
-         if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
+         if constexpr ( std::is_same_v<T, std::string> ) {
             value.resize( _bufferLength, '\0' );
             buffer = value.data();
          }
@@ -50,7 +50,7 @@ namespace seth_ql {
          os << std::boolalpha << std::setprecision( 15 );
          if ( isNull ) {
             os << "NULL";
-         } else if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
+         } else if constexpr ( std::is_same_v<T, std::string> ) {
             if ( value.size() ) {
                std::string out;
                out.reserve( length );

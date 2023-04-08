@@ -6,7 +6,6 @@
 #include <iostream>
 #include <sstream>
 
-#include "Span.hpp"
 #include "utilities.h"
 
 namespace seth_ql {
@@ -17,8 +16,8 @@ namespace seth_ql {
       InputtedType( std::string str1, std::string str2 ) : fieldName( str1 ), type( str2 ) {}
    };
 
-   std::vector<Table> getDBTables( const std::string& host, const std::string& user,
-                                   const std::string& password, const std::string& database ) {
+   std::vector<Table> getDBTables( const std::string& host, const std::string& user, const std::string& password,
+                                   const std::string& database ) {
       std::vector<Table> tables;
 
       if ( mysql_library_init( 0, nullptr, nullptr ) ) {
@@ -33,8 +32,8 @@ namespace seth_ql {
          exit( 1 );
       }
 
-      if ( mysql_real_connect( db_conn, host.c_str(), user.c_str(), password.c_str(),
-                               database.c_str(), 0, nullptr, 0 ) == nullptr ) {
+      if ( mysql_real_connect( db_conn, host.c_str(), user.c_str(), password.c_str(), database.c_str(), 0, nullptr,
+                               0 ) == nullptr ) {
          std::cerr << "Error: " << mysql_error( db_conn ) << '\n';
          mysql_close( db_conn );
          mysql_library_end();
@@ -68,8 +67,8 @@ namespace seth_ql {
          }
 
          std::stringstream ss;
-         ss << "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = \'"
-            << row[ 0 ] << "\'";
+         ss << "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = \'" << row[ 0 ]
+            << "\'";
          std::string query = ss.str();
 
          if ( mysql_query( db_conn, query.c_str() ) ) {
@@ -118,7 +117,7 @@ namespace seth_ql {
       return tables;
    }
 
-   void printDBTables( Span<const Table> tables ) {
+   void printDBTables( const std::vector<Table>& tables ) {
       std::for_each( tables.begin(), tables.end(), [ & ]( const auto& table ) {
          std::cout << "\n\nTable: " << table.name << '\n';
          puts( "" );
@@ -126,8 +125,7 @@ namespace seth_ql {
          std::cout << std::left << std::setw( 30 ) << "Internal Field Type";
          std::cout << std::left << std::setw( 30 ) << "External Field Type";
          std::cout << std::left << std::setw( 30 ) << "Unsigned" << '\n';
-         std::cout << std::left << std::setw( 125 ) << std::setfill( '-' ) << '-'
-                   << std::setfill( ' ' ) << '\n';
+         std::cout << std::left << std::setw( 125 ) << std::setfill( '-' ) << '-' << std::setfill( ' ' ) << '\n';
 
          puts( "" );
          std::for_each( table.fields.begin(), table.fields.end(), [ & ]( const auto& field ) {
@@ -143,8 +141,8 @@ namespace seth_ql {
       puts( "" );
    }
 
-   void printDBTables( const std::string& host, const std::string& user,
-                       const std::string& password, const std::string& database ) {
+   void printDBTables( const std::string& host, const std::string& user, const std::string& password,
+                       const std::string& database ) {
       std::vector<Table> tables = getDBTables( host, user, password, database );
       printDBTables( tables );
    }

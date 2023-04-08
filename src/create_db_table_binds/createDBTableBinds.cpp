@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "BindsArray.hpp"
-#include "Span.hpp"
 #include "getDBTables.h"
 #include "makeBinds.hpp"
 #include "utilities.h"
@@ -50,7 +49,7 @@ namespace seth_ql {
    }
 
    static void setFileBodies( std::ostringstream& declaration_body, std::ostringstream& definition_body,
-                              Span<Table> tables, unsigned long buff_size ) {
+                              const std::vector<Table>& tables, unsigned long buff_size ) {
       std::for_each( tables.begin(), tables.end(), [ & ]( const auto& table ) {
          std::string funcReq = std::string( "BindsArray<InputCType> " ) + table.name + "InputBindsArray()";
          std::string funcRes = std::string( "BindsArray<OutputCType> " ) + table.name + "OutputBindsArray()";

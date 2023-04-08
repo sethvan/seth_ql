@@ -2,9 +2,9 @@
 #define INCLUDED_SETH_QL_H
 
 #include "BindsArray.hpp"
+#include "CharArrView.hpp"
 #include "MySQLSession.h"
 #include "Query.h"
-#include "Span.hpp"
 #include "SqlTypes/SqlTypes.h"
 #include "Statement.h"
 #include "common.h"

@@ -5,7 +5,7 @@
 #include <string_view>
 #include <type_traits>
 
-#include "Span.hpp"
+#include "CharArrView.hpp"
 #include "SqlTypes/SqlCType.h"
 
 namespace seth_ql {
@@ -18,8 +18,8 @@ namespace seth_ql {
       virtual ~InputCType() = default;
       InputCType& operator=( const InputCType& ) = delete;
       virtual void operator=( long double newValue ) = 0;
-      virtual void operator=( const std::string_view newValue ) = 0;
-      virtual void operator=( Span<const unsigned char> newValue ) = 0;
+      // virtual void operator=( const std::string_view newValue ) = 0;
+      virtual void operator=( CharArrView newValue ) = 0;
       virtual void operator=( const MYSQL_TIME& newValue ) = 0;
 
       template <Field Type>
@@ -30,9 +30,9 @@ namespace seth_ql {
       }
 
       template <Field Type>
-      std::enable_if_t<ValType<Type>::is_char_array, std::basic_string<unsigned char>> Value() {
+      std::enable_if_t<ValType<Type>::is_char_array, std::string> Value() {
          unsigned char* ptr = static_cast<unsigned char*>( buffer );
-         std::basic_string<unsigned char> str( ptr, ptr + length );
+         std::string str( ptr, ptr + length );
          return str;
       }
    };
@@ -49,9 +49,9 @@ namespace seth_ql {
       InImpl( std::string_view _fieldName, unsigned long long _bufferLength = 0 )
           : InputCType( _fieldName,
                         ( ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) ? MYSQL_TYPE_TINY : Type ),
-                        ( std::is_same_v<T, std::basic_string<unsigned char>> ? nullptr : &value ), _bufferLength ) {
+                        ( std::is_same_v<T, std::string> ? nullptr : &value ), _bufferLength ) {
          static_assert( is_approved_type<T>::value, "Value type given to InputCType is not an approved type" );
-         if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
+         if constexpr ( std::is_same_v<T, std::string> ) {
             value.resize( _bufferLength, '\0' );
             buffer = value.data();
          }
@@ -73,28 +73,38 @@ namespace seth_ql {
             throw std::runtime_error( mismatch );
          }
       }
-      void operator=( const std::string_view newValue ) override {
-         if ( !newValue.length() ) {
+      // void operator=( const std::string_view newValue ) override {
+      //    if ( !newValue.length() ) {
+      //       isNull = true;
+      //       return;
+      //    }
+      //    if constexpr ( std::is_same_v<T, std::string> ) {
+      //       std::copy( newValue.begin(), newValue.end(), value.begin() );
+      //       length = newValue.size();
+      //    } else if constexpr ( std::is_integral_v<T> ) {
+      //       value = std::stol( std::string( newValue ) );
+      //    } else if constexpr ( std::is_same_v<T, float> ) {
+      //       value = std::stof( std::string( newValue ) );
+      //    } else if constexpr ( std::is_same_v<T, double> ) {
+      //       value = std::stod( std::string( newValue ) );
+      //    } else {
+      //       throw std::runtime_error( mismatch );
+      //    }
+      // }
+      void operator=( CharArrView newValue ) override {
+         if ( !newValue.size() ) {
             isNull = true;
             return;
          }
-         if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
+         if constexpr ( std::is_same_v<T, std::string> ) {
             std::copy( newValue.begin(), newValue.end(), value.begin() );
             length = newValue.size();
          } else if constexpr ( std::is_integral_v<T> ) {
-            value = std::stol( std::string( newValue ) );
+            value = std::stol( std::string( newValue.data() ) );
          } else if constexpr ( std::is_same_v<T, float> ) {
-            value = std::stof( std::string( newValue ) );
+            value = std::stof( std::string( newValue.data() ) );
          } else if constexpr ( std::is_same_v<T, double> ) {
-            value = std::stod( std::string( newValue ) );
-         } else {
-            throw std::runtime_error( mismatch );
-         }
-      }
-      void operator=( Span<const unsigned char> newValue ) override {
-         if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
-            std::copy( newValue.begin(), newValue.end(), value.begin() );
-            length = newValue.size();
+            value = std::stod( std::string( newValue.data() ) );
          } else {
             throw std::runtime_error( mismatch );
          }
@@ -110,8 +120,8 @@ namespace seth_ql {
          os << std::boolalpha << std::setprecision( 15 );
          if ( isNull ) {
             os << "NULL";
-         } else if constexpr ( std::is_same_v<T, std::basic_string<unsigned char>> ) {
-            std::copy( value.begin(), value.end(), std::ostream_iterator<unsigned char>{ os } );
+         } else if constexpr ( std::is_same_v<T, std::string> ) {
+            std::copy( value.begin(), value.end(), std::ostream_iterator<char>{ os } );
          } else if constexpr ( Type == MYSQL_TYPE_TINY ) {
             os << static_cast<int>( value );
          } else if constexpr ( Type == MYSQL_TYPE_BLOB && std::is_same_v<T, signed char> ) {

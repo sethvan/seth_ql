@@ -35,8 +35,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::CHAR> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_STRING>;
       constexpr static unsigned long max_buff_size = 255;
    };
    template <>
@@ -44,8 +44,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::VARCHAR> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_VAR_STRING>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_VAR_STRING>;
       constexpr static unsigned long max_buff_size = 65535;
    };
    template <>
@@ -53,8 +53,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::TINYTEXT> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_TINY_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_TINY_BLOB>;
       constexpr static unsigned long max_buff_size = 255;
    };
    template <>
@@ -62,8 +62,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::TEXT> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_BLOB>;
       constexpr static unsigned long max_buff_size = 65535;
    };
    template <>
@@ -71,8 +71,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::BLOB> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_BLOB>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_BLOB>;
       constexpr static unsigned long max_buff_size = 65535;
    };
    template <>
@@ -80,8 +80,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::MEDIUMTEXT> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_MEDIUM_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_MEDIUM_BLOB>;
       constexpr static unsigned long max_buff_size = 16777215;
    };
    template <>
@@ -89,8 +89,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::MEDIUMBLOB> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_MEDIUM_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_BLOB>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_MEDIUM_BLOB>;
       constexpr static unsigned long max_buff_size = 16777215;
    };
    template <>
@@ -98,8 +98,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::LONGTEXT> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_MEDIUM_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_MEDIUM_BLOB>;
       constexpr static unsigned long max_buff_size = 4294967295;
    };
    template <>
@@ -107,8 +107,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::LONGBLOB> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_LONG_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_BLOB>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_LONG_BLOB>;
       constexpr static unsigned long max_buff_size = 4294967295;
    };
    template <>
@@ -189,7 +189,7 @@ namespace seth_ql {
    template <>
    struct BindType<Field::DECIMAL> {
       using inType = InImpl<double, MYSQL_TYPE_DOUBLE>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_NEWDECIMAL>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_NEWDECIMAL>;
       constexpr static unsigned long max_buff_size = 400;
    };
    template <>
@@ -233,8 +233,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::ENUM> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_STRING>;
       constexpr static unsigned long max_buff_size = 0;
    };
    template <>
@@ -242,8 +242,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::SET> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_STRING>;
       constexpr static unsigned long max_buff_size = 0;
    };
    template <>
@@ -269,8 +269,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::GEOMETRY> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_BLOB>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_BLOB>;
       constexpr static unsigned long max_buff_size = 65535;
    };
    template <>
@@ -278,8 +278,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::JSON> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_JSON>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_JSON>;
+      using inType = InImpl<std::string, MYSQL_TYPE_JSON>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_JSON>;
       constexpr static unsigned long max_buff_size = MYSQL_OPT_MAX_ALLOWED_PACKET;
    };
    template <>
@@ -287,8 +287,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::BINARY> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_STRING>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_STRING>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_BLOB>;
       constexpr static unsigned long max_buff_size = 255;
    };
    template <>
@@ -296,8 +296,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::VARBINARY> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_BLOB>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_VAR_STRING>;
+      using inType = InImpl<std::string, MYSQL_TYPE_BLOB>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_VAR_STRING>;
       constexpr static unsigned long max_buff_size = 65535;
    };
    template <>
@@ -305,8 +305,8 @@ namespace seth_ql {
 
    template <>
    struct BindType<Field::TINYBLOB> {
-      using inType = InImpl<std::basic_string<unsigned char>, MYSQL_TYPE_TINY_BLOB>;
-      using outType = OutImpl<std::basic_string<unsigned char>, MYSQL_TYPE_TINY_BLOB>;
+      using inType = InImpl<std::string, MYSQL_TYPE_TINY_BLOB>;
+      using outType = OutImpl<std::string, MYSQL_TYPE_TINY_BLOB>;
       constexpr static unsigned long max_buff_size = 255;
    };
    template <>

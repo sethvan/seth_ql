@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "Span.hpp"
-
 namespace seth_ql {
 
    struct TableField {
@@ -29,7 +27,7 @@ namespace seth_ql {
 
    std::vector<Table> getDBTables( const std::string& host, const std::string& user, const std::string& password,
                                    const std::string& database );
-   void printDBTables( Span<const Table> tables );
+   void printDBTables( const std::vector<Table>& tables );
    void printDBTables( const std::string& host, const std::string& user, const std::string& password,
                        const std::string& database );
 
