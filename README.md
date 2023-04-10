@@ -148,6 +148,7 @@ minimal functionality.
     enum_field_types bufferType;
     bool is_null;
     bool error;
+    bool is_unsigned;
     unsigned long length;
     void* buffer;
     unsigned long long bufferLength;
