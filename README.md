@@ -155,7 +155,7 @@ minimal functionality.
 ```
 - Depending on whether for an input or output of a prepared statement The BindsArray class  
 stores a polymorphic InputCtype or OutputCType array for the different params needed.
-- The BindsArray object:
+- The _BindsArray_ object:
     - can set param values via overloaded operator= for all of the MySQL data types
     - can select params via overloaded operator[] using name or index of param in BindsArray
       ( i.e.,  
@@ -169,64 +169,94 @@ stores a polymorphic InputCtype or OutputCType array for the different params ne
     - can set types stored as char arrays ( i.e. VARCHAR, JSON, LONGBLOB, etc ) using input  
     values that are either const char*, char[] or constiguous char container classes.
     - can be created with multiple params and then modified to bind only certain params when  
-    needed using setBinds() method.
+    needed using _setBinds()_ method. In the below example, say you have the 3 binds "col1", "col2",  
+    and "col3". You can choose to bind only certain binds like this:
+    ```
+    inputBinds.setBinds({"col2"});         // bind only "col2"
+    inputBinds.setBinds({"col1", "col3"}); // bind only "col1" and "col3"
+    inputBinds.setBinds();                 // reset to default binding of all binds in array    
+    ```
+- The _BindsArray_ element's _Value<seth_ql::Field>()_ method:  
+    - For _MYSQL_TIME_ & fundamental types returns a reference to the value member in input _Binds_ arrays and a  
+    const reference in output _Binds_ arrays. 
+    - For char array types currently returns a _std::string_ representation of whatever the value is at that moment  
+    for both input and output arrays.  
+
       
 **_enum class Field_**
-- enum class for MySQL data types. Contains the names like INT, VARCHAR, etc. 
+- enum class for MySQL data types. Contains the names like INT, VARCHAR, etc... [See complete list](./include/SqlTypes/SqlCType.h#L109)
 - Contains most MySQL Types. As far as I know only YEAR is currently missing but there may be others.
 - In addition have included values INT_UNSIGNED, TINYINT_UNSIGNED etc for unsigned integers.
-- Note: _using_ _enum_ _Field;_ will cause an error in MSVC due to ambiguation with _INT_, _DOUBLE_. etc.
+- Note: _using_ _enum_ _Field;_ will cause an error in _MSVC_ due to ambiguation with _INT_, _DOUBLE_. etc.
 
 
 **_makeInputBindsArray()_** 
 - Outputs a custom BindsArray to be used for the input parameter values of a prepared statement.
+  ```
+  seth_ql::BindsArray<InputCType> inputBinds = seth_ql::makeInputBindsArray( 
+                                               seth_ql::Bind<seth_ql::Field::INT>( "col1" ), 
+                                               seth_ql::Bind<seth_ql::Field::VARCHAR>( "col2", 50 ),
+                                               seth_ql::Bind<seth_ql::Field::SMALLINT>( "col3" ) );
+  ```
+- _seth_ql::Bind<seth_ql::Field>_ structs:
+  - They should be listed in the order of their coresponding params in the prepared statement. 
+  - The name paramater (i.e., "col1") is chosen by you for your own chosen convention however I  
+  would recommend they correspond to field names when applicable. 
+  - If underlined type of param is a char array, then you may specify the buffer size as a second  
+  argument to the _seth_ql::Bind_ constructor as with the second bind in the above example. If  
+  not specified then the default max buffer size will be set. Max buffer sizes for each _seth_ql::Field_  
+  can be found [here](.include/makeBinds.hpp#L18).
 
 **_makeOutputBindsArray()_**
-- Outputs a custom BindsArray to be used for the rows in a prepared statements result set.
+- Outputs a custom BindsArray to be used for the rows in a prepared statements result set. Same as  
+above except specifying _OutputCType_ instead of _InputCType_.
 
 **_createDBTableBinds()_** 
 - Retrieves the data for all the tables in a specified database and writes separate BindsArray builder  
-functions for each of them to source files created at specified paths.
+functions for each of them to source files created at specified paths. [Example output file](https://github.com/sethvan/seth_ql/blob/master/example_code/generated_files/seth_qlBinds.cpp)
 	
 ## Prepared Statement Example 
 ```c++
 // taken from C API docs but done with seth_ql wrapper:
-#include <mysql.h>
+#include <mysql.h> // may be <mysql/mysql.h> depending on your downloaded library version
 #include "seth_ql.h"
 
 int main() {
-   seth_ql::MySQLSession::init();
-   seth_ql::Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
-   seth_ql::Query q( db_conn );
-   q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
+   try {
+      seth_ql::MySQLSession::init();
+      seth_ql::Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
+      seth_ql::Query q( db_conn );
+      q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
 
-   /* Prepare an INSERT query with 3 parameters */
-   seth_ql::Statement stmt( db_conn, "INSERT INTO test_table(col1,col2,col3) VALUES(?,?,?)" );
+      /* Prepare an INSERT query with 3 parameters */
+      seth_ql::Statement stmt( db_conn, "INSERT INTO test_table(col1,col2,col3) VALUES(?,?,?)" );
 
-   /* Bind the data for all 3 parameters */
-   auto input = seth_ql::makeInputBindsArray( seth_ql::Bind<seth_ql::Field::INT>( "col1" ), 
-                                              seth_ql::Bind<seth_ql::Field::VARCHAR>( "col2", 50 ),
-                                              seth_ql::Bind<seth_ql::Field::SMALLINT>( "col3" ) );
-   /* Bind the buffers */
-   stmt.bind_param( input.getBinds() );
+      /* Bind the data for all 3 parameters */
+      auto input = seth_ql::makeInputBindsArray( seth_ql::Bind<seth_ql::Field::INT>( "col1" ), 
+                                                 seth_ql::Bind<seth_ql::Field::VARCHAR>( "col2", 50 ),
+                                                 seth_ql::Bind<seth_ql::Field::SMALLINT>( "col3" ) );
+      /* Bind the buffers */
+      stmt.bind_param( input.getBinds() );
 
-   /* Specify the data values for the first row */
-   input[ "col1" ] = 10;          /* integer */
-   input[ "col2" ] = "MySQL";     /* string  */
-   input[ "col3" ].isNull = true; /* INSERT SMALLINT data as NULL */
+      /* Specify the data values for the first row */
+      input[ "col1" ] = 10;          /* integer */
+      input[ "col2" ] = "MySQL";     /* string  */
+      input[ "col3" ].isNull = true; /* INSERT SMALLINT data as NULL */
 
-   /* Execute the INSERT statement - 1*/
-   stmt.execute();
+      /* Execute the INSERT statement - 1*/
+      stmt.execute();
 
-   /* Specify data values for second row, then re-execute the statement */
-   input[ "col1" ] = 1000;
-   input[ "col2" ] = "The most popular Open Source database ";
-   input[ "col3" ] = 1000;         /* smallint */
-   input[ "col3" ].isNull = false; /* reset */
+      /* Specify data values for second row, then re-execute the statement */
+      input[ "col1" ] = 1000;
+      input[ "col2" ] = "The most popular Open Source database ";
+      input[ "col3" ] = 1000;         /* smallint */
+      input[ "col3" ].isNull = false; /* reset */
 
-   /* Execute the INSERT statement - 2*/
-   stmt.execute();
+      /* Execute the INSERT statement - 2*/
+      stmt.execute();
 
-   /* RAII closes the statement, connection and session*/
+      /* RAII closes the statement, connection and session*/
+   } catch ( const std::runtime_error& e ) { std::cerr << e.what(); }
+
    return 0;
 }
