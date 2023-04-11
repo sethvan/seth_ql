@@ -177,10 +177,10 @@ stores a polymorphic InputCtype or OutputCType array for the different params ne
     inputBinds.setBinds();                 // reset to default binding of all binds in array    
     ```
 - The _BindsArray_ element's _Value<seth_ql::Field>()_ method:  
-    - For _MYSQL_TIME_ & fundamental types returns a reference to the value member in input _Binds_ arrays and a  
-    const reference in output _Binds_ arrays. 
-    - For char array types currently returns a _std::string_ representation of whatever the value is at that moment  
-    for both input and output arrays.  
+    - For _MYSQL_TIME_ & fundamental types returns a reference to the value member in input _Binds_ arrays  
+    and a const reference in output _Binds_ arrays. 
+    - For char array types currently returns a _std::string_ representation of whatever the value is at  
+    that moment for both input and output arrays.  
 
       
 **_enum class Field_**
