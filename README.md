@@ -3,7 +3,7 @@
 My personal in progress C++ wrapper of the [MySQL C API](https://dev.mysql.com/doc/c-api/8.0/en/).  
 Currently the main feature is that it provides a wrapper for the [MYSQL_BIND](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-data-structures.html) structs used to make  
 [prepared statements](https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-statement-interface.html) and  [set query attributes](https://dev.mysql.com/doc/c-api/8.0/en/mysql-bind-param.html). Adding a few other wrappers as I go starting with  
-minimal functionality.
+minimal functionality. Meant for use with C API as helper code, not in place of.
 
 - [seth\_ql](#seth_ql)
   - [Dependencies and Requirements](#dependencies-and-requirements)
