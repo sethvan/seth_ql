@@ -252,7 +252,7 @@ stores a polymorphic InputCtype or OutputCType array for the different params ne
   - If underlined type of param is a char array, then you may specify the buffer size as a second  
   argument to the _seth_ql::Bind_ constructor as with the second bind in the above example. If  
   not specified then the default max buffer size will be set. Max buffer sizes for each _seth_ql::Field_  
-  can be found [here](.include/makeBinds.hpp#L18).
+  can be found [here](./include/makeBinds.hpp#L18).
 
 **_makeOutputBindsArray()_**
 - Outputs a custom BindsArray to be used for the rows in a prepared statements result set. Same as  
