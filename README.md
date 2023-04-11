@@ -6,11 +6,58 @@ Currently the main feature is that it provides a wrapper for the [MYSQL_BIND](ht
 minimal functionality. Meant for use with C API as helper code, not in place of.
 
 - [seth\_ql](#seth_ql)
+  - [Prepared Statement Example](#prepared-statement-example)
   - [Dependencies and Requirements](#dependencies-and-requirements)
   - [Installation](#installation)
   - [Principal classes and functions](#principal-classes-and-functions)
-  - [Prepared Statement Example](#prepared-statement-example)
   - [License](./LICENSE)
+
+## Prepared Statement Example 
+```c++
+// taken from C API docs but done with seth_ql wrapper:
+#include <mysql.h> // may be <mysql/mysql.h> depending on your downloaded library version
+#include "seth_ql.h"
+
+int main() {
+   try {
+      seth_ql::MySQLSession::init();
+      seth_ql::Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
+      seth_ql::Query q( db_conn );
+      q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
+
+      /* Prepare an INSERT query with 3 parameters */
+      seth_ql::Statement stmt( db_conn, "INSERT INTO test_table(col1,col2,col3) VALUES(?,?,?)" );
+
+      /* Bind the data for all 3 parameters */
+      auto input = seth_ql::makeInputBindsArray( seth_ql::Bind<seth_ql::Field::INT>( "col1" ), 
+                                                 seth_ql::Bind<seth_ql::Field::VARCHAR>( "col2", 50 ),
+                                                 seth_ql::Bind<seth_ql::Field::SMALLINT>( "col3" ) );
+      /* Bind the buffers */
+      stmt.bind_param( input.getBinds() );
+
+      /* Specify the data values for the first row */
+      input[ "col1" ] = 10;          /* integer */
+      input[ "col2" ] = "MySQL";     /* string  */
+      input[ "col3" ].isNull = true; /* INSERT SMALLINT data as NULL */
+
+      /* Execute the INSERT statement - 1*/
+      stmt.execute();
+
+      /* Specify data values for second row, then re-execute the statement */
+      input[ "col1" ] = 1000;
+      input[ "col2" ] = "The most popular Open Source database ";
+      input[ "col3" ] = 1000;         /* smallint */
+      input[ "col3" ].isNull = false; /* reset */
+
+      /* Execute the INSERT statement - 2*/
+      stmt.execute();
+
+      /* RAII closes the statement, connection and session*/
+   } catch ( const std::runtime_error& e ) { std::cerr << e.what(); }
+
+   return 0;
+}
+``` 
 
 ## Dependencies and Requirements
 
@@ -215,48 +262,4 @@ above except specifying _OutputCType_ instead of _InputCType_.
 - Retrieves the data for all the tables in a specified database and writes separate BindsArray builder  
 functions for each of them to source files created at specified paths. [Example output file](https://github.com/sethvan/seth_ql/blob/master/example_code/generated_files/seth_qlBinds.cpp)
 	
-## Prepared Statement Example 
-```c++
-// taken from C API docs but done with seth_ql wrapper:
-#include <mysql.h> // may be <mysql/mysql.h> depending on your downloaded library version
-#include "seth_ql.h"
 
-int main() {
-   try {
-      seth_ql::MySQLSession::init();
-      seth_ql::Connection db_conn( HOST, USER, PASSWORD, DATABASE, 0, "", 0 );
-      seth_ql::Query q( db_conn );
-      q.execute( "CREATE TABLE test_table(col1 INT, col2 VARCHAR(40), col3 SMALLINT)" );
-
-      /* Prepare an INSERT query with 3 parameters */
-      seth_ql::Statement stmt( db_conn, "INSERT INTO test_table(col1,col2,col3) VALUES(?,?,?)" );
-
-      /* Bind the data for all 3 parameters */
-      auto input = seth_ql::makeInputBindsArray( seth_ql::Bind<seth_ql::Field::INT>( "col1" ), 
-                                                 seth_ql::Bind<seth_ql::Field::VARCHAR>( "col2", 50 ),
-                                                 seth_ql::Bind<seth_ql::Field::SMALLINT>( "col3" ) );
-      /* Bind the buffers */
-      stmt.bind_param( input.getBinds() );
-
-      /* Specify the data values for the first row */
-      input[ "col1" ] = 10;          /* integer */
-      input[ "col2" ] = "MySQL";     /* string  */
-      input[ "col3" ].isNull = true; /* INSERT SMALLINT data as NULL */
-
-      /* Execute the INSERT statement - 1*/
-      stmt.execute();
-
-      /* Specify data values for second row, then re-execute the statement */
-      input[ "col1" ] = 1000;
-      input[ "col2" ] = "The most popular Open Source database ";
-      input[ "col3" ] = 1000;         /* smallint */
-      input[ "col3" ].isNull = false; /* reset */
-
-      /* Execute the INSERT statement - 2*/
-      stmt.execute();
-
-      /* RAII closes the statement, connection and session*/
-   } catch ( const std::runtime_error& e ) { std::cerr << e.what(); }
-
-   return 0;
-}
