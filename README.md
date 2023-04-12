@@ -261,5 +261,16 @@ above except specifying _OutputCType_ instead of _InputCType_.
 **_createDBTableBinds()_** 
 - Retrieves the data for all the tables in a specified database and writes separate BindsArray builder  
 functions for each of them to source files created at specified paths. [Example output file](https://github.com/sethvan/seth_ql/blob/master/example_code/generated_files/seth_qlBinds.cpp)
+```
+int main() {
+   try {
+      createDBTableBinds( HOST, USER, PASSWORD, DATABASE, "path_to_create_your_database_binds.h",
+                          "path_to_create_your_databse_binds.cpp", "header_include_as_appears_in_cpp_file",
+                          /*default buffer size for all char array types here, can be individually modified later*/ );
+
+   } catch ( std::runtime_error& e ) { std::cerr << e.what(); }
+
+   return 0;
+}
 	
 
