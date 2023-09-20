@@ -10,7 +10,6 @@ minimal functionality. Meant for use with C API as helper code, not in place of.
   - [Dependencies and Requirements](#dependencies-and-requirements)
   - [Installation](#installation)
   - [Principal classes and functions](#principal-classes-and-functions)
-  - [License](./LICENSE)
 
 ## Prepared Statement Example 
 ```c++
@@ -167,9 +166,8 @@ int main() {
    _seth_ql_ repo´s _out/build_ folder ( i.e., _out/build/x64-release_ ).  
    Save changes.
    
-   Now just include _<mysql.h>_ and _"seth_ql.h"_ in the source files where you want to use the  
-   library and you should be good to go. Depending on how you installed the MySQL client library,  
-   include may need to appear as _<mysql/mysql.h>_.
+   Now just include _"seth_ql.h"_ in the source files where you want to use the  
+  library, link library and you should be good to go. It should also be findable as a package for CMake projects as _seth_ql_.
    
 ## Principal classes and functions
 
@@ -273,4 +271,3 @@ int main() {
    return 0;
 }
 	
-

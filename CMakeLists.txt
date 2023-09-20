@@ -47,7 +47,10 @@ endif()
 
 target_link_libraries(seth_ql PUBLIC ${MYSQL_LIBRARIES})
 
-target_include_directories( seth_ql PUBLIC include ${MYSQL_INCLUDE_DIRS})
+target_include_directories( seth_ql PUBLIC 
+    $<INSTALL_INTERFACE:include> 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+    ${MYSQL_INCLUDE_DIRS})
 
 install(TARGETS seth_ql
     EXPORT seth_ql
@@ -57,4 +60,6 @@ install(TARGETS seth_ql
 install(DIRECTORY include/
     DESTINATION include
     FILES_MATCHING PATTERN "*.h*")
+
+install(EXPORT seth_ql FILE seth_ql-config.cmake DESTINATION lib/seth_ql)
 
